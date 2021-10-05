@@ -11,6 +11,13 @@ import matplotlib.pyplot as plt
 
 
 class ShapeNetCoreLoader:
+    '''
+    Dataloader class for Shapenet Core Dataset.
+
+    Args:
+        object_category (str): One of the 12 objects from the ShapenetCore dataset.
+        n_sampled_points (int): Number of points to be sampled from each point cloud.
+    '''
 
     def __init__(self, object_category: str = 'Airplane', n_sampled_points: int = 1024) -> None:
         self._get_files()
@@ -23,6 +30,7 @@ class ShapeNetCoreLoader:
         self.n_sampled_points = n_sampled_points
         self.point_clouds, self.test_point_clouds = [], []
         self.point_cloud_labels, self.all_labels = [], []
+        self.point_cloud_dataframes = []
         self.labels = self.metadata[self.object_category]['lables']
         self.colors = self.metadata[self.object_category]['colors']
     
@@ -61,6 +69,9 @@ class ShapeNetCoreLoader:
             self.all_labels[index] = sampled_labels
     
     def load_data(self):
+        '''
+        Function to load the ShapeNet Core Point Cloud and Label Cloud into the primary memory.
+        '''
         points_dir = os.path.join(
             self.dataset_path, '{}/points'.format(self.metadata[self.object_category]['directory']))
         labels_dir = os.path.join(
@@ -87,35 +98,36 @@ class ShapeNetCoreLoader:
                     label_data.reshape(
                         label_data.shape[1], label_data.shape[0]))
                 self.all_labels.append(label_map)
+                self.point_cloud_dataframes.append(
+                    pd.DataFrame(data={
+                        'x': point_cloud[:, 0],
+                        'y': point_cloud[:, 1],
+                        'z': point_cloud[:, 2],
+                        'label': label_map
+                    })
+                )
             except KeyError:
                 # Use point cloud files without labels as test data
                 self.test_point_clouds.append(point_cloud)
     
     def visualize_data_plotly(self, index):
+        '''
+        Function to visualize the point cloud and corresponding labels using Plotly.
+        '''
         fig = px.scatter_3d(
-            pd.DataFrame(
-                data={
-                    'x': self.point_clouds[index][:, 0],
-                    'y': self.point_clouds[index][:, 1],
-                    'z': self.point_clouds[index][:, 2],
-                    'label': self.all_labels[index]
-                }
-            ), x="x", y="y", z="z",
-            color="label", labels={"label": "Label"},
+            self.point_cloud_dataframes[index],
+            x="x", y="y", z="z", color="label",
+            labels={"label": "Label"},
             color_discrete_sequence=self.colors,
             category_orders={"label": self.labels}
         )
         fig.show()
     
     def visualize_data_plt(self, index):
-        df = pd.DataFrame(
-            data={
-                'x': self.point_clouds[index][:, 0],
-                'y': self.point_clouds[index][:, 1],
-                'z': self.point_clouds[index][:, 2],
-                'label': self.all_labels[index],
-            }
-        )
+        '''
+        Function to visualize the point cloud and corresponding labels using Matplotlib.
+        '''
+        df = self.point_cloud_dataframes[index]
         fig = plt.figure(figsize=(15, 10))
         ax = plt.axes(projection='3d')  
         for index, label in enumerate(self.labels):
@@ -138,10 +150,13 @@ class ShapeNetCoreLoader:
     def _generate_dataset(self, point_clouds, label_clouds, batch_size: int):
         dataset = tf.data.Dataset.from_tensor_slices((point_clouds, label_clouds))
         dataset = dataset.map(self._load_data, num_parallel_calls=tf.data.AUTOTUNE)
-        dataset = dataset.batch(batch_size=batch_size, drop_remainder=True)
+        dataset = dataset.batch(batch_size=batch_size)
         return dataset
     
     def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
+        '''
+        Get Tensorflow BatchDataset objects for train and validation data.
+        '''
         self._sample_points()
         split_index = int(len(self.point_clouds) * (1 - val_split))
         train_point_clouds = self.point_clouds[:split_index]
