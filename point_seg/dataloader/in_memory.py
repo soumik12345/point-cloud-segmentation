@@ -10,9 +10,9 @@ import plotly.express as px
 import matplotlib.pyplot as plt
 
 
-class ShapeNetCoreLoader:
+class ShapeNetCoreLoaderInMemory:
     """
-    Dataloader class for Shapenet Core Dataset.
+    In-memory Dataloader class for Shapenet Core Dataset.
 
     Args:
         object_category (str): One of the 12 objects from the ShapenetCore dataset.
@@ -187,6 +187,14 @@ class ShapeNetCoreLoader:
     def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
         """
         Get Tensorflow BatchDataset objects for train and validation data.
+
+        Args:
+            val_split (str): Fraction representing validation split (default=0.2).
+            batch_size (int): Batch size for training and validation (default=16).
+        
+        Returns:
+            train_dataset (tensorflow BatchDataset): Train dataset,
+            val_dataset (tensorflow BatchDataset): Validation dataset
         """
         self._sample_points()
         split_index = int(len(self.point_clouds) * (1 - val_split))

@@ -1,1 +1,1 @@
-from .dataloader import ShapeNetCoreLoader
+from .dataloader import ShapeNetCoreLoaderInMemory, ShapeNetCoreLoader
