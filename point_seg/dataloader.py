@@ -109,7 +109,7 @@ class ShapeNetCoreLoader:
                 'label': self.all_labels[index],
             }
         )
-        fig = plt.figure(figsize=(15,10))
+        fig = plt.figure(figsize=(15, 10))
         ax = plt.axes(projection='3d')  
         for index, label in enumerate(self.labels):
             c_df = df[df['label'] == label]
