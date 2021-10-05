@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 
 class ShapeNetCoreLoader:
 
-    def __init__(self, object_category: str = 'Airplane') -> None:
+    def __init__(self, object_category: str = 'Airplane', n_sampled_points: int = 1024) -> None:
         self._get_files()
         self.dataset_path = '/tmp/.keras/datasets/PartAnnotation'
         self.metadata = self._load_metadata()
@@ -20,6 +20,7 @@ class ShapeNetCoreLoader:
             raise KeyError('Not a valid Shapenet Object. Must be one of ' + str(self.metadata.keys()))
         else:
             self.object_category = object_category
+        self.n_sampled_points = n_sampled_points
         self.point_clouds, self.test_point_clouds = [], []
         self.point_cloud_labels, self.all_labels = [], []
         self.labels = self.metadata[self.object_category]['lables']
@@ -38,13 +39,13 @@ class ShapeNetCoreLoader:
             metadata = json.load(json_file)
         return metadata
     
-    def sample_points(self, n_sampled_points: int = 1024):
+    def _sample_points(self):
         for index in tqdm(range(len(self.point_clouds))):
             current_point_cloud = self.point_clouds[index]
             current_label_cloud = self.point_cloud_labels[index]
             current_labels = self.all_labels[index]
             n_points = len(current_point_cloud)
-            sampled_indices = random.sample(list(range(n_points)), n_sampled_points)
+            sampled_indices = random.sample(list(range(n_points)), self.n_sampled_points)
             sampled_point_cloud = np.array([current_point_cloud[i] for i in sampled_indices])
             sampled_label_cloud = np.array([current_label_cloud[i] for i in sampled_indices])
             sampled_labels = np.array([current_labels[i] for i in sampled_indices])
@@ -122,9 +123,24 @@ class ShapeNetCoreLoader:
         ax.legend()
         plt.show()
     
-    def get_datasets(self, val_split: float = 0.2):
+    def _load_data(self, point_cloud, label_cloud):
+        point_cloud.set_shape([self.n_sampled_points, 3])
+        label_cloud.set_shape([self.n_sampled_points, len(self.labels)])
+        return point_cloud, label_cloud
+    
+    def _generate_dataset(self, point_clouds, label_clouds, batch_size: int):
+        dataset = tf.data.Dataset.from_tensor_slices((point_clouds, label_clouds))
+        dataset = dataset.map(self._load_data, num_parallel_calls=tf.data.AUTOTUNE)
+        dataset = dataset.batch(batch_size=batch_size, drop_remainder=True)
+        return dataset
+    
+    def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
+        self._sample_points()
         split_index = int(len(self.point_clouds) * (1 - val_split))
         train_point_clouds = self.point_clouds[:split_index]
         train_point_cloud_labels = self.point_cloud_labels[:split_index]
         val_point_clouds = self.point_clouds[split_index:]
         val_point_cloud_labels = self.point_cloud_labels[split_index:]
+        train_dataset = self._generate_dataset(train_point_clouds, train_point_cloud_labels, batch_size)
+        val_dataset = self._generate_dataset(val_point_clouds, val_point_cloud_labels, batch_size)
+        return train_dataset, val_dataset

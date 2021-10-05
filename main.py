@@ -7,8 +7,6 @@ data_loader.load_data()
 data_loader.visualize_data_plt(0)
 data_loader.visualize_data_plt(300)
 
-data_loader.sample_points()
-data_loader.visualize_data_plt(0)
-data_loader.visualize_data_plt(300)
-
-data_loader.get_datasets()
+train_dataset, val_dataset = data_loader.get_datasets()
+print('Train Dataset:', train_dataset)
+print('Val Dataset:', val_dataset)
