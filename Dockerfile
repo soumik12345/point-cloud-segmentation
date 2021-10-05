@@ -38,12 +38,13 @@ RUN apt-get update && apt-get install -y \
 
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install black==19.10b0 \
+    jupyter \
     matplotlib==3.4.3 \
     pandas==1.3.3 \
     plotly==5.3.1 \
     plotly-express==0.4.1 \
-    tqdm==4.62.3 \
-    jupyter
+    pytest==6.2.5 \
+    tqdm==4.62.3
 
 COPY . /usr/src/point-cloud-segmentation/
 
