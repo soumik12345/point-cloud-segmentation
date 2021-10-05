@@ -45,11 +45,18 @@ class ShapeNetCoreLoader:
             current_label_cloud = self.point_cloud_labels[index]
             current_labels = self.all_labels[index]
             n_points = len(current_point_cloud)
+            # Randomly sampling respective indices
             sampled_indices = random.sample(list(range(n_points)), self.n_sampled_points)
+            # Sampling points corresponding to sampled indices
             sampled_point_cloud = np.array([current_point_cloud[i] for i in sampled_indices])
+            # Sampling corresponding one-hot encoded labels
             sampled_label_cloud = np.array([current_label_cloud[i] for i in sampled_indices])
+            # Sampling corresponding labels for visualization
             sampled_labels = np.array([current_labels[i] for i in sampled_indices])
-            self.point_clouds[index] = sampled_point_cloud
+            # Normalizing sampled point cloud
+            normalized_point_cloud = sampled_point_cloud - np.mean(sampled_point_cloud, axis=0)
+            normalized_point_cloud /= np.max(np.linalg.norm(normalized_point_cloud, axis=1))
+            self.point_clouds[index] = normalized_point_cloud
             self.point_cloud_labels[index] = sampled_label_cloud
             self.all_labels[index] = sampled_labels
     
