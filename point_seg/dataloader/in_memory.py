@@ -12,7 +12,11 @@ import matplotlib.pyplot as plt
 
 class ShapeNetCoreLoaderInMemory:
     """
-    In-memory Dataloader class for Shapenet Core Dataset.
+    In-memory Dataloader class for Shapenet Core Dataset. This dataloader 
+    was built primarily for EDA purposes and hence has good support for 
+    visualization. This dataloader generates all the point clouds and 
+    corresponding label clouds as in-memory data structures which are subsequently 
+    used to generate the Tensorflow BatchDatasets.
 
     Args:
         object_category (str): One of the 12 objects from the ShapenetCore dataset.
