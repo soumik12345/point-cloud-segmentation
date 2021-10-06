@@ -16,7 +16,7 @@ class ShapeNetCoreLoaderInMemory:
     was built primarily for EDA purposes and hence has good support for 
     visualization. This dataloader loads all the point clouds and corresponding 
     label clouds as in-memory data structures which are subsequently used to 
-    generate the Tensorflow BatchDatasets.
+    generate the TensorFlow BatchDatasets.
 
     Args:
         object_category (str): One of the 12 objects from the ShapenetCore dataset.
@@ -190,15 +190,15 @@ class ShapeNetCoreLoaderInMemory:
 
     def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
         """
-        Get Tensorflow BatchDataset objects for train and validation data.
+        Get TensorFlow BatchDataset objects for train and validation data.
 
         Args:
             val_split (str): Fraction representing validation split (default=0.2).
             batch_size (int): Batch size for training and validation (default=16).
         
         Returns:
-            train_dataset (tensorflow BatchDataset): Train dataset,
-            val_dataset (tensorflow BatchDataset): Validation dataset
+            train_dataset (TensorFlow BatchDataset): Train dataset,
+            val_dataset (TensorFlow BatchDataset): Validation dataset
         """
         self._sample_points()
         split_index = int(len(self.point_clouds) * (1 - val_split))
