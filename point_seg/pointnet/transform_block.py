@@ -6,6 +6,8 @@ from .blocks import conv_block, mlp_block
 
 
 class OrthogonalRegularizer(regularizers.Regularizer):
+    '''Referece: https://keras.io/examples/vision/pointnet/#build-a-model'''
+
     def __init__(self, num_features, l2reg=0.001):
         self.num_features = num_features
         self.l2reg = l2reg
@@ -19,6 +21,7 @@ class OrthogonalRegularizer(regularizers.Regularizer):
 
 
 def transformation_net(inputs, num_features):
+    '''Reference: https://keras.io/examples/vision/pointnet/#build-a-model'''
     x = conv_block(inputs, filters=64)
     x = conv_block(x, filters=128)
     x = conv_block(x, filters=1024)
