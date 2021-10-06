@@ -11,11 +11,13 @@ from glob import glob
 
 from .augmentations import apply_jitter
 
+_AUTO = tf.data.AUTOTUNE
+
 
 class ShapeNetCoreLoader:
 
     """
-    End-to-end Dataloader class for Shapenet Core Dataset.
+    End-to-end Dataloader class for ShapeNet Core Dataset.
 
     Args:
         object_category (str): One of the 12 objects from the ShapenetCore dataset.
@@ -30,7 +32,7 @@ class ShapeNetCoreLoader:
         self.metadata = self._load_metadata()
         if object_category not in self.metadata.keys():
             raise KeyError(
-                "Not a valid Shapenet Object. Must be one of "
+                "Not a valid ShapeNet Object. Must be one of "
                 + str(self.metadata.keys())
             )
         else:
@@ -78,9 +80,9 @@ class ShapeNetCoreLoader:
                 if os.path.exists(label_file):
                     label_data[label] = 0  # Dummy assignment only used as a placeholder.
             try:
-                label_data = np.vstack(tuple([label_data[key] for key in self.labels]))
+                _ = np.vstack(tuple([label_data[key] for key in self.labels]))
                 self.points_files_with_keys.add(point_file)
-            except:
+            except KeyError:
                 self.points_files_without_keys.add(point_file)
         self.points_files_with_keys = list(self.points_files_with_keys)
         self.points_files_without_keys = list(self.points_files_without_keys)
@@ -139,32 +141,35 @@ class ShapeNetCoreLoader:
         point_files_ds = tf.data.Dataset.from_tensor_slices(point_filepaths)
         if is_train:
             point_files_ds = point_files_ds.shuffle(batch_size * 100)
+
         point_ds = point_files_ds.map(
-            self._tf_process_point_file, num_parallel_calls=tf.data.AUTOTUNE
+            self._tf_process_point_file, num_parallel_calls=_AUTO
         )
         point_ds = point_ds.batch(batch_size)
         if is_train:
-            point_ds = point_ds.map(apply_jitter, num_parallel_calls=tf.data.AUTOTUNE)
+            point_ds = point_ds.map(apply_jitter, num_parallel_calls=_AUTO)
         return point_ds
 
     def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
         """
-        Get Tensorflow BatchDataset objects for train and validation data.
+        Get TensorFlow BatchDataset objects for train and validation data.
 
         Args:
             val_split (str): Fraction representing validation split (default=0.2).
             batch_size (int): Batch size for training and validation (default=16).
         
         Returns:
-            train_dataset (tensorflow BatchDataset): Train dataset,
-            val_dataset (tensorflow BatchDataset): Validation dataset
+            train_dataset (TensorFlow BatchDataset): Train dataset,
+            val_dataset (TensorFlow BatchDataset): Validation dataset
         """
         self._load_point_files()
         split_index = int(len(self.points_files_with_keys) * (1 - val_split))
         train_point_cloud_files = self.points_files_with_keys[:split_index]
         val_point_cloud_files = self.points_files_with_keys[split_index:]
+
         print(f"Total training files: {len(train_point_cloud_files)}.")
         print(f"Total validation files: {len(val_point_cloud_files)}.")
+
         train_dataset = self._prepare_dataset(
             train_point_cloud_files, is_train=True, batch_size=batch_size
         )
