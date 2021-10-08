@@ -1,6 +1,8 @@
+import tensorflow as tf
 import unittest
 
 from point_seg import ShapeNetCoreLoaderInMemory, ShapeNetCoreLoader
+from point_seg import models
 
 
 class DataLoaderTester(unittest.TestCase):
@@ -29,3 +31,14 @@ class DataLoaderTester(unittest.TestCase):
         x, y = next(iter(val_dataset))
         assert x.shape == (16, 1024, 3)
         assert y.shape == (16, 1024, 4)
+
+
+class BaselineSegmentModelTester(unittest.TestCase):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.baseline_model = models.get_baseline_segmentation_model(1024, 4)
+
+    def test_model_output_shape(self):
+        random_inputs = tf.random.normal((16, 1024, 3))
+        random_predictions = self.baseline_model.predict(random_inputs)
+        assert random_predictions.shape == (16, 1024, 4)
