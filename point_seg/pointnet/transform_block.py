@@ -6,8 +6,7 @@ from .blocks import conv_block, mlp_block
 
 
 class OrthogonalRegularizer(regularizers.Regularizer):
-    '''Referece: https://keras.io/examples/vision/pointnet/#build-a-model'''
-
+    """Reference: https://keras.io/examples/vision/pointnet/#build-a-model"""
     def __init__(self, num_features, l2reg=0.001):
         self.num_features = num_features
         self.l2reg = l2reg
@@ -20,8 +19,11 @@ class OrthogonalRegularizer(regularizers.Regularizer):
         return tf.reduce_sum(self.l2reg * tf.square(xxt - self.identity))
 
 
-def transformation_net(inputs, num_features):
-    '''Reference: https://keras.io/examples/vision/pointnet/#build-a-model'''
+def transformation_net(inputs: tf.Tensor, num_features: int) -> tf.Tensor:
+    """
+    Reference: https://keras.io/examples/vision/pointnet/#build-a-model.
+    The `filters` values come from the original paper: https://arxiv.org/pdf/1612.00593.pdf.
+    """
     x = conv_block(inputs, filters=64)
     x = conv_block(x, filters=128)
     x = conv_block(x, filters=1024)
@@ -36,7 +38,7 @@ def transformation_net(inputs, num_features):
     )(x)
 
 
-def transformation_block(inputs, num_features):
+def transformation_block(inputs: tf.Tensor, num_features: int) -> tf.Tensor:
     transformed_features = transformation_net(inputs, num_features)
     transformed_features = layers.Reshape((num_features, num_features))(transformed_features)
     return layers.Dot(axes=(2, 1))([inputs, transformed_features])
