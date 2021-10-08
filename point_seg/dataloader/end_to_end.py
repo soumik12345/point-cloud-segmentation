@@ -78,7 +78,9 @@ class ShapeNetCoreLoader:
             for label in self.labels:
                 label_file = os.path.join(self.labels_dir, label, file_id + ".seg")
                 if os.path.exists(label_file):
-                    label_data[label] = 0  # Dummy assignment only used as a placeholder.
+                    label_data[
+                        label
+                    ] = 0  # Dummy assignment only used as a placeholder.
             try:
                 _ = np.vstack(tuple([label_data[key] for key in self.labels]))
                 self.points_files_with_keys.add(point_file)
