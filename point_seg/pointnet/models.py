@@ -14,7 +14,7 @@ def get_baseline_segmentation_model(num_points: int, num_classes: int) -> keras.
     transformed_inputs = transformation_block(input_points, num_features=3)
     features = conv_block(transformed_inputs, filters=64)
     features = conv_block(features, filters=64)
-    transformed_fetaures = segmentation_feedback = transformation_block(features, num_features=64)
+    transformed_fetaures = transformation_block(features, num_features=64)
     features = conv_block(transformed_fetaures, filters=64)
     features = conv_block(features, filters=128)
     features = conv_block(features, filters=1024)
@@ -22,7 +22,7 @@ def get_baseline_segmentation_model(num_points: int, num_classes: int) -> keras.
     global_features = tf.tile(global_features, [1, num_points, 1])
 
     # Segmentation Head.
-    segmentation_input = layers.Concatenate()([segmentation_feedback, global_features])
+    segmentation_input = layers.Concatenate()([transformed_fetaures, global_features])
     segmentation_features = conv_block(segmentation_input, filters=512)
     segmentation_features = conv_block(segmentation_features, filters=256)
     segmentation_features = conv_block(segmentation_features, filters=128)
