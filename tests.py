@@ -30,19 +30,19 @@ class DataLoaderTester(unittest.TestCase):
         train_dataset, val_dataset = self.in_memory_data_loader.get_datasets()
         x, y = next(iter(train_dataset))
         assert x.shape == (16, 1024, 3)
-        assert y.shape == (16, 1024, 4)
+        assert y.shape == (16, 1024, 5)
         x, y = next(iter(val_dataset))
         assert x.shape == (16, 1024, 3)
-        assert y.shape == (16, 1024, 4)
+        assert y.shape == (16, 1024, 5)
 
     def test_e2e_data_loader(self):
         train_dataset, val_dataset = self.e2e_data_loader.get_datasets()
         x, y = next(iter(train_dataset))
         assert x.shape == (16, 1024, 3)
-        assert y.shape == (16, 1024, 4)
+        assert y.shape == (16, 1024, 5)
         x, y = next(iter(val_dataset))
         assert x.shape == (16, 1024, 3)
-        assert y.shape == (16, 1024, 4)
+        assert y.shape == (16, 1024, 5)
 
 
 class BaselineSegmentModelTester(unittest.TestCase):
@@ -57,9 +57,9 @@ class BaselineSegmentModelTester(unittest.TestCase):
             archive_format="auto",
             cache_dir="datasets",
         )
-        self.baseline_model = models.get_baseline_segmentation_model(1024, 4)
+        self.baseline_model = models.get_baseline_segmentation_model(1024, 5)
 
     def test_model_output_shape(self):
         random_inputs = tf.random.normal((16, 1024, 3))
         random_predictions = self.baseline_model.predict(random_inputs)
-        assert random_predictions.shape == (16, 1024, 4)
+        assert random_predictions.shape == (16, 1024, 5)

@@ -2,7 +2,6 @@ name: tests
 on:
   push:
     branches:
-      - main
       - dataloader-fix
     paths:
       - .github/**
@@ -12,7 +11,6 @@ on:
       - requirements.txt
   pull_request:
     branches:
-      - main
       - dataloader-fix
     paths:
       - .github/**
