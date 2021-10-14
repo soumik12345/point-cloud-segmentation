@@ -1,5 +1,7 @@
 # Point Cloud Segmentation
 
+<img src="https://github.com/soumik12345/point-cloud-segmentation/workflows/tests/badge.svg" alt="build-failing">
+
 ## Running using Docker
 
 - Build image using `docker build -t point-cloud-image .`
