@@ -1,0 +1,27 @@
+name: tests
+on:
+  push:
+    branches:
+      - dataloader-fix
+    paths:
+      - .github/**
+      - point_seg/**
+      - tests.py
+      - requirements.txt
+  pull_request:
+    branches:
+      - dataloader-fix
+    paths:
+      - .github/**
+      - point_seg/**
+      - tests.py
+      - requirements.txt
+jobs:
+  testing-on-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          pip install -U pip
+          pip install -r requirements.txt
+          pytest tests.py -s

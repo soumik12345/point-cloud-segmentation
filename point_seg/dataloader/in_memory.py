@@ -118,11 +118,15 @@ class ShapeNetCoreLoaderInMemory:
                 for label in self.labels:
                     for i, data in enumerate(label_data[label]):
                         label_map[i] = label if data == 1 else label_map[i]
-                label_data = np.vstack(tuple([label_data[key] for key in self.labels]))
-                self.point_clouds.append(point_cloud)
-                self.point_cloud_labels.append(
-                    label_data.reshape(label_data.shape[1], label_data.shape[0])
+                label_data = [
+                    self.labels.index(label) if label != "none" else len(self.labels)
+                    for label in label_map
+                ]
+                label_cloud = tf.keras.utils.to_categorical(
+                    label_data, num_classes=len(self.labels) + 1
                 )
+                self.point_clouds.append(point_cloud)
+                self.point_cloud_labels.append(label_cloud)
                 self.all_labels.append(label_map)
                 self.point_cloud_dataframes.append(
                     pd.DataFrame(
@@ -179,7 +183,7 @@ class ShapeNetCoreLoaderInMemory:
 
     def _load_data(self, point_cloud, label_cloud):
         point_cloud.set_shape([self.n_sampled_points, 3])
-        label_cloud.set_shape([self.n_sampled_points, len(self.labels)])
+        label_cloud.set_shape([self.n_sampled_points, len(self.labels) + 1])
         return point_cloud, label_cloud
 
     def _generate_dataset(self, point_clouds, label_clouds, batch_size: int):
