@@ -183,7 +183,7 @@ class ShapeNetCoreLoaderInMemory:
 
     def _load_data(self, point_cloud, label_cloud):
         point_cloud.set_shape([self.n_sampled_points, 3])
-        label_cloud.set_shape([self.n_sampled_points, len(self.labels)])
+        label_cloud.set_shape([self.n_sampled_points, len(self.labels) + 1])
         return point_cloud, label_cloud
 
     def _generate_dataset(self, point_clouds, label_clouds, batch_size: int):
