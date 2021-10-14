@@ -19,8 +19,8 @@ print(x.shape, y.shape)
 
 num_points = x.shape[1]
 num_classes = y.shape[-1]
-baseline_segmentation_model = models.get_baseline_segmentation_model(num_points, num_classes)
+baseline_segmentation_model = models.get_baseline_segmentation_model(
+    num_points, num_classes
+)
 print(baseline_segmentation_model.summary())
 print(baseline_segmentation_model.predict(x).shape)
-
-
