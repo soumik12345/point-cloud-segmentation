@@ -63,5 +63,5 @@ class ShapeSegmentModelTester(unittest.TestCase):
 
     def test_model_output_shape(self):
         random_inputs = tf.random.normal((16, 2048, 3))
-        random_predictions = self.baseline_model.predict(random_inputs)
+        random_predictions = self.shapenet_model.predict(random_inputs)
         assert random_predictions.shape == (16, 2048, 5)
