@@ -21,7 +21,7 @@ class DataLoaderTester(unittest.TestCase):
             cache_dir="datasets",
         )
         self.in_memory_data_loader = ShapeNetCoreLoaderInMemory(
-            object_category="Airplane"
+            object_category="Airplane", viz_samples=50
         )
         self.in_memory_data_loader.load_data()
         self.e2e_data_loader = ShapeNetCoreLoader(object_category="Airplane")

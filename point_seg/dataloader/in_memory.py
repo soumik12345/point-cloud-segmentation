@@ -3,8 +3,11 @@ import json
 import random
 import numpy as np
 import pandas as pd
+
+from typing import Union, Any
 from glob import glob
 from tqdm import tqdm
+
 import tensorflow as tf
 import plotly.express as px
 import matplotlib.pyplot as plt
@@ -21,10 +24,11 @@ class ShapeNetCoreLoaderInMemory:
     Args:
         object_category (str): One of the 12 objects from the ShapenetCore dataset.
         n_sampled_points (int): Number of points to be sampled from each point cloud.
+        viz_samples: Number of samples to be loaded for visualization (optional).  
     """
 
     def __init__(
-        self, object_category: str = "Airplane", n_sampled_points: int = 1024
+        self, object_category: str = "Airplane", n_sampled_points: int = 1024, viz_samples=None:
     ) -> None:
         self._get_files()
         self.dataset_path = "/tmp/.keras/datasets/PartAnnotation"
@@ -42,6 +46,7 @@ class ShapeNetCoreLoaderInMemory:
         self.point_cloud_dataframes = []
         self.labels = self.metadata[self.object_category]["lables"]
         self.colors = self.metadata[self.object_category]["colors"]
+        self.viz_samples = viz_samples
 
     def _get_files(self):
         dataset_url = "https://github.com/soumik12345/point-cloud-segmentation/releases/download/v0.1/shapenet.zip"
@@ -103,7 +108,11 @@ class ShapeNetCoreLoaderInMemory:
             self.dataset_path,
             "{}/points_label".format(self.metadata[self.object_category]["directory"]),
         )
+        
         points_files = glob(os.path.join(points_dir, "*.pts"))
+        if self.viz_samples:
+            points_files = points_files[:points_files]
+        
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)
             file_id = point_file.split("/")[-1].split(".")[0]
