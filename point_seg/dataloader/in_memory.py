@@ -113,7 +113,7 @@ class ShapeNetCoreLoaderInMemory:
 
         points_files = glob(os.path.join(points_dir, "*.pts"))
         if self.viz_samples:
-            points_files = points_files[:self.viz_samples]
+            points_files = points_files[: self.viz_samples]
 
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)

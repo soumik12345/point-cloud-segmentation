@@ -9,9 +9,10 @@ on:
 jobs:
   run-tests:
     runs-on: ubuntu-latest
+    container: tensorflow/tensorflow
     steps:
       - uses: actions/checkout@v2
       - run: |
           pip install -U pip
-          pip install -r requirements.txt
+          pip install -r requirements.docker
           pytest tests.py -s
