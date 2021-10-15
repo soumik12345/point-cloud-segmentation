@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: docker://tensorflow/tensorflow
       - run: |
           pip install -U pip
-          pip install -r requirements.txt
+          pip install -r requirements.docker
           pytest tests.py -s
