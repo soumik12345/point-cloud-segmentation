@@ -1,23 +1,13 @@
-name: tests
+name: Run tests
 on:
-  push:
-    branches:
-      - dataloader-fix
-    paths:
-      - .github/**
-      - point_seg/**
-      - tests.py
-      - requirements.txt
   pull_request:
-    branches:
-      - dataloader-fix
     paths:
       - .github/**
       - point_seg/**
       - tests.py
       - requirements.txt
 jobs:
-  testing-on-linux:
+  run-tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

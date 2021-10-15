@@ -2,7 +2,7 @@ from point_seg import ShapeNetCoreLoaderInMemory, ShapeNetCoreLoader
 from point_seg import models
 
 
-data_loader = ShapeNetCoreLoaderInMemory(object_category="Airplane")
+data_loader = ShapeNetCoreLoaderInMemory(object_category="Airplane", viz_samples=100)
 
 data_loader.load_data()
 data_loader.visualize_data_plt(0)
