@@ -4,7 +4,6 @@ import random
 import numpy as np
 import pandas as pd
 
-from typing import Union, Any
 from glob import glob
 from tqdm import tqdm
 
@@ -28,7 +27,10 @@ class ShapeNetCoreLoaderInMemory:
     """
 
     def __init__(
-        self, object_category: str = "Airplane", n_sampled_points: int = 1024, viz_samples=None:
+        self,
+        object_category: str = "Airplane",
+        n_sampled_points: int = 1024,
+        viz_samples=None,
     ) -> None:
         self._get_files()
         self.dataset_path = "/tmp/.keras/datasets/PartAnnotation"
@@ -108,11 +110,11 @@ class ShapeNetCoreLoaderInMemory:
             self.dataset_path,
             "{}/points_label".format(self.metadata[self.object_category]["directory"]),
         )
-        
+
         points_files = glob(os.path.join(points_dir, "*.pts"))
         if self.viz_samples:
-            points_files = points_files[:points_files]
-        
+            points_files = points_files[:self.viz_samples]
+
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)
             file_id = point_file.split("/")[-1].split(".")[0]
@@ -148,7 +150,7 @@ class ShapeNetCoreLoaderInMemory:
                     )
                 )
             except KeyError:
-                # Use point cloud files without labels as test data
+                # Use point cloud files without labels as test data.
                 self.test_point_clouds.append(point_cloud)
 
     def visualize_data_plotly(self, index):
