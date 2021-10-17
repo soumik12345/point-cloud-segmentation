@@ -1,3 +1,8 @@
+"""
+This dataloader is currently limited by physical memory. Hence it performs
+worse than the in-memory dataloader.
+"""
+
 import os
 import json
 import random
