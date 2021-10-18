@@ -1,6 +1,9 @@
 import os
-import click
+from absl import app
+from absl import flags
 from datetime import datetime
+
+from ml_collections.config_flags import config_flags
 
 from tensorflow.keras import optimizers, callbacks
 
@@ -8,58 +11,38 @@ from point_seg import ShapeNetCoreLoaderInMemory, ShapeNetCoreLoader
 from point_seg import models, utils
 
 
-@click.command()
-@click.option("--category", "-c", default="Airplane", help="Shapenet Category")
-@click.option("--in_memory", "-i", is_flag=True, help="Flag: Use In-memory dataloader")
-@click.option("--batch_size", "-b", default=16, help="Batch Size")
-@click.option(
-    "--n_sampled_points",
-    "-n",
-    default=2048,
-    help="Number of points to be sampled from a give point cloud",
-)
-@click.option("--initial_lr", "-l", default=1e-3, help="Initial Learning Rate")
-@click.option(
-    "--drop_every", "-d", default=20, help="Epochs after which Learning Rate is dropped"
-)
-@click.option("--decay_factor", "-f", default=0.5, help="Learning Rate Decay Factor")
-@click.option("--epochs", "-e", default=60, help="Number of training epochs")
-@click.option(
-    "--use_baseline_model",
-    "-m",
-    is_flag=True,
-    help="Flag: Use Baseline Model or ShapenetCore Segmenbtation Model",
-)
-def train(
-    category,
-    in_memory,
-    batch_size,
-    n_sampled_points,
-    initial_lr,
-    drop_every,
-    decay_factor,
-    epochs,
-    use_baseline_model,
-):
+FLAGS = flags.FLAGS
+config_flags.DEFINE_config_file("experiment_configs")
 
-    # Dataloader
+
+def main(_):
+
+    # Define Dataloader
     data_loader = (
         ShapeNetCoreLoaderInMemory(
-            object_category=category, n_sampled_points=n_sampled_points
+            object_category=FLAGS.experiment_configs.object_category,
+            n_sampled_points=FLAGS.experiment_configs.num_points,
         )
-        if in_memory
+        if FLAGS.experiment_configs.in_memory
         else ShapeNetCoreLoader(
-            object_category=category, n_sampled_points=n_sampled_points
+            object_category=FLAGS.experiment_configs.object_category,
+            n_sampled_points=FLAGS.experiment_configs.num_points,
         )
     )
-    if in_memory:
+    if FLAGS.experiment_configs.in_memory:
         data_loader.load_data()
 
     # Create tf.data.Datasets
-    train_dataset, val_dataset = data_loader.get_datasets(batch_size=batch_size)
+    train_dataset, val_dataset = data_loader.get_datasets(
+        batch_size=FLAGS.experiment_configs.batch_size
+    )
 
     # Learning Rate scheduling callback
-    lr_scheduler = utils.StepDecay(initial_lr, drop_every, decay_factor)
+    lr_scheduler = utils.StepDecay(
+        FLAGS.experiment_configs.initial_lr,
+        FLAGS.experiment_configs.drop_every,
+        FLAGS.experiment_configs.decay_factor,
+    )
     lr_callback = callbacks.LearningRateScheduler(
         lambda epoch: lr_scheduler(epoch), verbose=True
     )
@@ -75,13 +58,17 @@ def train(
     )
 
     # Define Model and Optimizer
-    optimizer = optimizers.Adam(learning_rate=initial_lr)
+    optimizer = optimizers.Adam(learning_rate=FLAGS.experiment_configs.initial_lr)
     _, y = next(iter(train_dataset))
     num_classes = y.shape[-1]
     model = (
-        models.get_baseline_segmentation_model(n_sampled_points, num_classes)
-        if use_baseline_model
-        else models.get_shape_segmentation_model(n_sampled_points, num_classes)
+        models.get_baseline_segmentation_model(
+            FLAGS.experiment_configs.num_points, num_classes
+        )
+        if FLAGS.experiment_configs.use_baseline_model
+        else models.get_shape_segmentation_model(
+            FLAGS.experiment_configs.num_points, num_classes
+        )
     )
     model.compile(
         optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
@@ -91,10 +78,10 @@ def train(
     model.fit(
         train_dataset,
         validation_data=val_dataset,
-        epochs=epochs,
+        epochs=FLAGS.experiment_configs.epochs,
         callbacks=[tb_callback, lr_callback, checkpoint_callback],
     )
 
 
 if __name__ == "__main__":
-    train()
+    app.run(main)
