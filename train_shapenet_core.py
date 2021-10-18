@@ -12,10 +12,17 @@ from point_seg import models, utils
 
 
 FLAGS = flags.FLAGS
+flags.DEFINE_string("project_name", "pointnet_shapenet_core", "Project Name")
+flags.DEFINE_string("experiment_name", "shapenet_core_experiment", "Experiment Name")
+flags.DEFINE_string("wandb_api_key", None, "Wandb API Key")
 config_flags.DEFINE_config_file("experiment_configs")
 
 
 def main(_):
+
+    # Initialize W&B
+    if FLAGS.wandb_api_key is not None:
+        utils.init_wandb(FLAGS.project_name, FLAGS.experiment_name, FLAGS.wandb_api_key)
 
     # Define Dataloader
     data_loader = (
