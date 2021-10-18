@@ -1,6 +1,7 @@
 import os
 import wandb
 import numpy as np
+from typing import Dict
 import matplotlib.pyplot as plt
 
 
@@ -33,7 +34,7 @@ class StepDecay(LearningRateDecay):
         return new_lr
 
 
-def init_wandb(project_name, experiment_name, wandb_api_key):
+def init_wandb(project_name, experiment_name, wandb_api_key, config: Dict):
     """Initialize Wandb
     Args:
         project_name: project name on Wandb
@@ -42,4 +43,8 @@ def init_wandb(project_name, experiment_name, wandb_api_key):
     """
     if project_name is not None and experiment_name is not None:
         os.environ["WANDB_API_KEY"] = wandb_api_key
-        wandb.init(project=project_name, name=experiment_name, sync_tensorboard=True)
+        wandb.init(
+            project=project_name,
+            name=experiment_name,
+            config=config
+        )

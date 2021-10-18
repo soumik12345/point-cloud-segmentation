@@ -15,7 +15,7 @@
 Usage: train_shapenet_core.py [OPTIONS]
 
 Options:
-  --project_name          Project Name (DEFAULT: pointnet_shapenet_core)
+  --wandb_project_name    Project Name (DEFAULT: pointnet_shapenet_core)
   --experiment_name       Experiment Name (DEFAULT: shapenet_core_experiment)
   --wandb_api_key         W&B API Key (OPTIONAL)
   --experiment_configs    Experiment configs (configs/shapenetcore.py)
@@ -27,5 +27,5 @@ Options:
   --drop_every            Epochs after which Learning Rate is dropped (DEFAULT: 20)
   --decay_factor          Learning Rate Decay Factor (DEFAULT: 0.5)
   --epochs                Number of training epochs (DEFAULT: 50)
-  --use_baseline_model    Flag: Use Baseline Model or ShapenetCore Segmenbtation Model (DEFAULT: False)
+  --use_baseline_model    Flag: Use Baseline Model or ShapenetCore Segmentation Model (DEFAULT: False). Note: The baseline model is also a Pointnet variant; The ShapenetCore Segmentation Model is a Pointnet variant designed specifically for shape segmentation.
 ```

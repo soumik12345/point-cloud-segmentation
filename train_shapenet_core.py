@@ -1,3 +1,9 @@
+r"""Train a Pointnet-based Shape Segmentation Model.
+
+Sample Useage:
+python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
+"""
+
 import os
 from absl import app
 from absl import flags
@@ -12,7 +18,7 @@ from point_seg import models, utils
 
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("project_name", "pointnet_shapenet_core", "Project Name")
+flags.DEFINE_string("wandb_project_name", "pointnet_shapenet_core", "W&B Project Name")
 flags.DEFINE_string("experiment_name", "shapenet_core_experiment", "Experiment Name")
 flags.DEFINE_string("wandb_api_key", None, "Wandb API Key")
 config_flags.DEFINE_config_file("experiment_configs")
@@ -22,7 +28,12 @@ def main(_):
 
     # Initialize W&B
     if FLAGS.wandb_api_key is not None:
-        utils.init_wandb(FLAGS.project_name, FLAGS.experiment_name, FLAGS.wandb_api_key)
+        utils.init_wandb(
+            FLAGS.wandb_project_name,
+            FLAGS.experiment_name,
+            FLAGS.wandb_api_key,
+            FLAGS.experiment_configs.to_dict()
+        )
 
     # Define Dataloader
     data_loader = (
