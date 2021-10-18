@@ -32,7 +32,7 @@ def main(_):
             FLAGS.wandb_project_name,
             FLAGS.experiment_name,
             FLAGS.wandb_api_key,
-            FLAGS.experiment_configs.to_dict()
+            FLAGS.experiment_configs.to_dict(),
         )
 
     # Define Dataloader
