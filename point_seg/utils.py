@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Any
 import matplotlib.pyplot as plt
 
 
@@ -27,7 +26,7 @@ class StepDecay(LearningRateDecay):
         self.drop_every = drop_every
         self.decay_factor = decay_factor
     
-    def __call__(self, epoch: int) -> Any:
+    def __call__(self, epoch: int) -> float:
         exp = np.floor((1 + epoch) / self.drop_every)
         new_lr = self.initial_lr * (self.decay_factor ** exp)
         return new_lr

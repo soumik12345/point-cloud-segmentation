@@ -41,6 +41,8 @@ def train(
     epochs,
     use_baseline_model,
 ):
+
+    # Dataloader
     data_loader = (
         ShapeNetCoreLoaderInMemory(
             object_category=category, n_sampled_points=n_sampled_points
@@ -52,20 +54,30 @@ def train(
     )
     if in_memory:
         data_loader.load_data()
+
+    # Create tf.data.Datasets
     train_dataset, val_dataset = data_loader.get_datasets(batch_size=batch_size)
-    _, y = next(iter(train_dataset))
-    num_classes = y.shape[-1]
+
+    # Learning Rate scheduling callback
     lr_scheduler = utils.StepDecay(initial_lr, drop_every, decay_factor)
     lr_callback = callbacks.LearningRateScheduler(
         lambda epoch: lr_scheduler(epoch), verbose=True
     )
+
+    # Tensorboard Callback
     logs_dir = f'logs_{datetime.utcnow().strftime("%y%m%d-%H%M%S")}'
     tb_callback = callbacks.TensorBoard(log_dir=logs_dir)
+
+    # Model Checkpoint Callback
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=os.path.join(logs_dir, "checkpoints", "model_{epoch}"),
         save_weights_only=True,
     )
+
+    # Define Model and Optimizer
     optimizer = optimizers.Adam(learning_rate=initial_lr)
+    _, y = next(iter(train_dataset))
+    num_classes = y.shape[-1]
     model = (
         models.get_baseline_segmentation_model(n_sampled_points, num_classes)
         if use_baseline_model
@@ -74,6 +86,8 @@ def train(
     model.compile(
         optimizer=optimizer, loss="categorical_crossentropy", metrics=["accuracy"]
     )
+
+    # Train
     model.fit(
         train_dataset,
         validation_data=val_dataset,
