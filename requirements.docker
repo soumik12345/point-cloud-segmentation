@@ -1,5 +1,6 @@
 black==19.10b0
 matplotlib
+ml-collections==0.1.0
 pandas
 plotly-express
 pytest
