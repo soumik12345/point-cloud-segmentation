@@ -120,7 +120,7 @@ class ShapeNetCoreTFRecordWriter:
             except KeyError:
                 # Use point cloud files without labels as test data
                 self.test_point_clouds.append(point_cloud)
-        # self._sample_point_clouds()
+        self._sample_point_clouds()
 
     def _write_tfrecords_with_labels(
         self,

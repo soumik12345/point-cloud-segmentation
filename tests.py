@@ -7,6 +7,7 @@ from point_seg import (
     ShapeNetCoreLoaderInMemory,
     ShapeNetCoreLoader,
     ShapeNetCoreTFRecordWriter,
+    TFRecordLoader
 )
 from point_seg import models
 
@@ -62,7 +63,7 @@ class ShapeSegmentModelTester(unittest.TestCase):
         assert random_predictions.shape == (16, 2048, 5)
 
 
-class TFRecordCreationTester(unittest.TestCase):
+class TFRecordTester(unittest.TestCase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.object_category = "Airplane"
@@ -70,6 +71,7 @@ class TFRecordCreationTester(unittest.TestCase):
         self.samples_per_shard = 512
         self.tfrecord_dir = "./tfrecords"
         self.val_split = 0.2
+        self.batch_size = 16
 
     def test_tfrecord_creation(self):
         tfrecord_writer = ShapeNetCoreTFRecordWriter(
@@ -89,3 +91,13 @@ class TFRecordCreationTester(unittest.TestCase):
         )
         assert len(train_tfrecord_files) == 1
         assert len(val_tfrecord_files) == 1
+    
+    def test_tfrecord_loader(self):
+        tfrecord_loader = TFRecordLoader(self.tfrecord_dir, self.object_category)
+        train_dataset, val_dataset = tfrecord_loader.get_datasets(batch_size=self.batch_size)
+        x, y = next(iter(train_dataset))
+        assert x.shape == (16, 1024, 3)
+        assert y.shape == (16, 1024, 5)
+        x, y = next(iter(val_dataset))
+        assert x.shape == (16, 1024, 3)
+        assert y.shape == (16, 1024, 5)

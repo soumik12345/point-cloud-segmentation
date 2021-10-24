@@ -1,6 +1,7 @@
 from .dataloader import (
     ShapeNetCoreLoaderInMemory,
     ShapeNetCoreLoader,
-    ShapeNetCoreTFRecordWriter
+    ShapeNetCoreTFRecordWriter,
+    TFRecordLoader
 )
 from .pointnet import models
