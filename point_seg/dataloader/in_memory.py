@@ -198,24 +198,27 @@ class ShapeNetCoreLoaderInMemory:
         point_cloud_batch.set_shape([self.n_sampled_points, 3])
         label_cloud_batch.set_shape([self.n_sampled_points, len(self.labels) + 1])
         return point_cloud_batch, label_cloud_batch
-    
+
     def _augment(self, point_cloud_batch, label_cloud_batch):
         """Jitter point and label clouds."""
         noise = tf.random.uniform(
-            tf.shape(label_cloud_batch),
-            -0.005, 0.005, dtype=tf.float64
+            tf.shape(label_cloud_batch), -0.005, 0.005, dtype=tf.float64
         )
         point_cloud_batch += noise[:, :, :3]
         return point_cloud_batch, label_cloud_batch
 
-    def _generate_dataset(self, point_clouds, label_clouds, batch_size: int, is_training: bool):
+    def _generate_dataset(
+        self, point_clouds, label_clouds, batch_size: int, is_training: bool
+    ):
         dataset = tf.data.Dataset.from_tensor_slices((point_clouds, label_clouds))
         dataset = dataset.shuffle(batch_size * 100) if is_training else dataset
         dataset = dataset.map(self._load_data, num_parallel_calls=tf.data.AUTOTUNE)
         dataset = dataset.batch(batch_size=batch_size)
-        dataset = dataset.map(
-            self._augment, num_parallel_calls=tf.data.AUTOTUNE
-        ) if is_training else dataset
+        dataset = (
+            dataset.map(self._augment, num_parallel_calls=tf.data.AUTOTUNE)
+            if is_training
+            else dataset
+        )
         return dataset
 
     def get_datasets(self, val_split: float = 0.2, batch_size: int = 16):
