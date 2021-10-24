@@ -81,7 +81,7 @@ class ShapeNetCoreTFRecordWriter:
             self.point_clouds[index] = sampled_point_cloud
             self.point_cloud_labels[index] = sampled_label_cloud
 
-    def load_data(self, limit=0) -> None:
+    def load_data(self, limit=None) -> None:
         points_dir = os.path.join(
             self.dataset_path,
             "{}/points".format(self.metadata[self.object_category]["directory"]),
@@ -90,7 +90,9 @@ class ShapeNetCoreTFRecordWriter:
             self.dataset_path,
             "{}/points_label".format(self.metadata[self.object_category]["directory"]),
         )
-        points_files = glob(os.path.join(points_dir, "*.pts"))[:limit]
+        points_files = glob(os.path.join(points_dir, "*.pts"))
+        if limit is not None:
+            points_files = points_files[:limit]
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)
             file_id = point_file.split("/")[-1].split(".")[0]
@@ -134,10 +136,13 @@ class ShapeNetCoreTFRecordWriter:
         logging.info(f"num_tfrecords: {num_tfrecords}")
         point_cloud_shards = split_list(point_clouds, samples_per_shard)
         label_cloud_shards = split_list(label_clouds, samples_per_shard)
+        lower_limit, upper_limit = 0, samples_per_shard
         for index in range(num_tfrecords):
             point_cloud_shard = point_cloud_shards[index]
             label_cloud_shard = label_cloud_shards[index]
-            file_name = f"shapenet_{index}.tfrec"
+            file_name = "shapenet-{:04d}-{:04d}.tfrec".format(lower_limit, upper_limit)
+            lower_limit += samples_per_shard
+            upper_limit += samples_per_shard
             logging.info(f"Writing TFRecord File {file_name}")
             with tf.io.TFRecordWriter(
                 os.path.join(tfrecord_dir, self.object_category, split, file_name)
