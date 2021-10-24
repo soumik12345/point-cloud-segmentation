@@ -21,8 +21,9 @@ class ShapeNetCoreTFRecordWriter:
         n_sampled_points: int = 1024,
         viz_samples=None,
     ) -> None:
-        self._get_files()
         self.dataset_path = "/tmp/.keras/datasets/PartAnnotation"
+        if not os.path.exists(self.dataset_path) or os.listdir(self.dataset_path) == 0:
+            self._get_files()
         self.metadata = self._load_metadata()
         if object_category not in self.metadata.keys():
             raise KeyError(
@@ -77,10 +78,10 @@ class ShapeNetCoreTFRecordWriter:
                 sampled_point_cloud, axis=0
             )
             norm_point_cloud /= np.max(np.linalg.norm(norm_point_cloud, axis=1))
-            self.point_clouds[index] = norm_point_cloud
+            self.point_clouds[index] = sampled_point_cloud
             self.point_cloud_labels[index] = sampled_label_cloud
 
-    def load_data(self) -> None:
+    def load_data(self, limit=0) -> None:
         points_dir = os.path.join(
             self.dataset_path,
             "{}/points".format(self.metadata[self.object_category]["directory"]),
@@ -89,7 +90,7 @@ class ShapeNetCoreTFRecordWriter:
             self.dataset_path,
             "{}/points_label".format(self.metadata[self.object_category]["directory"]),
         )
-        points_files = glob(os.path.join(points_dir, "*.pts"))
+        points_files = glob(os.path.join(points_dir, "*.pts"))[:limit]
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)
             file_id = point_file.split("/")[-1].split(".")[0]
@@ -117,7 +118,7 @@ class ShapeNetCoreTFRecordWriter:
             except KeyError:
                 # Use point cloud files without labels as test data
                 self.test_point_clouds.append(point_cloud)
-        self._sample_point_clouds()
+        # self._sample_point_clouds()
 
     def _write_tfrecords_with_labels(
         self,
