@@ -20,6 +20,14 @@ class OrthogonalRegularizer(regularizers.Regularizer):
         xxt = tf.reshape(xxt, (-1, self.num_features, self.num_features))
         return tf.reduce_sum(self.l2reg * tf.square(xxt - identity))
 
+    def get_config(self):
+        config = super(OrthogonalRegularizer, self).get_config()
+        config.update({
+            "num_features":self.num_features,
+            "l2reg": self.l2reg,
+        })
+        return config
+
 
 def transformation_net(inputs: tf.Tensor, num_features: int, name: str) -> tf.Tensor:
     """
