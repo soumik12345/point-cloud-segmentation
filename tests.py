@@ -45,17 +45,6 @@ class DataLoaderTester(unittest.TestCase):
         assert y.shape == (16, 1024, 5)
 
 
-class BaselineSegmentModelTester(unittest.TestCase):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
-        self.baseline_model = models.get_baseline_segmentation_model(1024, 5)
-
-    def test_model_output_shape(self):
-        random_inputs = tf.random.normal((16, 1024, 3))
-        random_predictions = self.baseline_model.predict(random_inputs)
-        assert random_predictions.shape == (16, 1024, 5)
-
-
 class ShapeSegmentModelTester(unittest.TestCase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
