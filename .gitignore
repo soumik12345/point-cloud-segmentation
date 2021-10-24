@@ -2,3 +2,4 @@ venv/
 **pycache**
 .pytest_cache
 .ipynb_checkpoints/
+tfrecords/

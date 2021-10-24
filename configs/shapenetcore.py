@@ -13,4 +13,8 @@ def get_config() -> ml_collections.ConfigDict:
     config.decay_factor = 0.5  # Learning Rate Decay Factor
     config.epochs = 50  # Number of training epochs
     config.use_mp = True  # Flag: Use mixed-precision or not
+
+    config.tfrecord_dir = "./tfrecords" # TFRecord dump dir
+    config.samples_per_shard = 512 # Max number of data shards per TFRecord file
+
     return config
