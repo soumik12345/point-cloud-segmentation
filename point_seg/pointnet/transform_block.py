@@ -14,10 +14,11 @@ class OrthogonalRegularizer(regularizers.Regularizer):
         self.identity = tf.eye(num_features)
 
     def __call__(self, x):
+        identity = tf.cast(self.identity, x.dtype)
         x = tf.reshape(x, (-1, self.num_features, self.num_features))
         xxt = tf.tensordot(x, x, axes=(2, 2))
         xxt = tf.reshape(xxt, (-1, self.num_features, self.num_features))
-        return tf.reduce_sum(self.l2reg * tf.square(xxt - self.identity))
+        return tf.reduce_sum(self.l2reg * tf.square(xxt - identity))
 
 
 def transformation_net(inputs: tf.Tensor, num_features: int, name: str) -> tf.Tensor:
