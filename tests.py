@@ -1,7 +1,13 @@
-import tensorflow as tf
+import os
 import unittest
+from glob import glob
+import tensorflow as tf
 
-from point_seg import ShapeNetCoreLoaderInMemory, ShapeNetCoreLoader
+from point_seg import (
+    ShapeNetCoreLoaderInMemory,
+    ShapeNetCoreLoader,
+    ShapeNetCoreTFRecordWriter,
+)
 from point_seg import models
 
 
@@ -54,3 +60,32 @@ class ShapeSegmentModelTester(unittest.TestCase):
         random_inputs = tf.random.normal((16, 2048, 3))
         random_predictions = self.shapenet_model.predict(random_inputs)
         assert random_predictions.shape == (16, 2048, 5)
+
+
+class TFRecordCreationTester(unittest.TestCase):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.object_category = "Airplane"
+        self.num_points = 1024
+        self.samples_per_shard = 512
+        self.tfrecord_dir = "./tfrecords"
+        self.val_split = 0.2
+
+    def test_tfrecord_creation(self):
+        tfrecord_writer = ShapeNetCoreTFRecordWriter(
+            object_category=self.object_category, n_sampled_points=self.num_points,
+        )
+        tfrecord_writer.load_data()
+        tfrecord_writer.write_tfrecords(
+            samples_per_shard=self.samples_per_shard,
+            tfrecord_dir=self.tfrecord_dir,
+            val_split=self.val_split,
+        )
+        train_tfrecord_files = glob(
+            os.path.join(self.tfrecord_dir, self.object_category, "train/*.tfrec")
+        )
+        val_tfrecord_files = glob(
+            os.path.join(self.tfrecord_dir, self.object_category, "val/*.tfrec")
+        )
+        assert len(train_tfrecord_files) == 6
+        assert len(val_tfrecord_files) == 2

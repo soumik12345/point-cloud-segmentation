@@ -12,9 +12,11 @@
 ## Create TFRecords for ShapenetCore Shape Segmentation
 
 ```
-Usage: train_shapenet_core.py [OPTIONS]
+Usage: create_tfrecords.py [OPTIONS]
 
 Options:
+  --val_split             Validation Split (DEFAULT: 0.2)
+  --object_category       ShapenetCore object category (DEFAULT: 'Airplane')
   --tfrecord_dir          TFRecord dump dir (DEFAULT: './tfrecords')
   --samples_per_shard     Max number of data samples per TFRecord file (DEFAULT: 512)
 

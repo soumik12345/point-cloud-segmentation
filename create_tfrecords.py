@@ -25,6 +25,7 @@ def main(_):
     tfrecord_writer.write_tfrecords(
         samples_per_shard=FLAGS.experiment_configs.samples_per_shard,
         tfrecord_dir=FLAGS.experiment_configs.tfrecord_dir,
+        val_split=FLAGS.experiment_configs.val_split
     )
 
 

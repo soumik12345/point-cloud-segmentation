@@ -81,3 +81,8 @@ def visualize_data_plotly(point_cloud, labels, unique_labels: List[str], colors:
         category_orders={"label": unique_labels}
     )
     fig.show()
+
+
+def make_dir(dir_name):
+    if not os.path.exists(dir_name):
+        os.makedirs(dir_name)

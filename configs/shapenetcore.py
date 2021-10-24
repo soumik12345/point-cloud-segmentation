@@ -7,6 +7,7 @@ def get_config() -> ml_collections.ConfigDict:
     config.in_memory = True  # Flag: Use In-memory dataloader
     config.batch_size = 32  # Batch Size
     config.num_points = 1024  # Number of points to be sampled from a given point cloud
+    config.val_split = 0.2 # Fraction representing Validation Split
 
     config.initial_lr = 1e-3  # Initial Learning Rate
     config.drop_every = 20  # Epochs after which Learning Rate is dropped
