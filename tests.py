@@ -1,5 +1,6 @@
 import os
 import unittest
+import tempfile
 from glob import glob
 import tensorflow as tf
 
@@ -69,7 +70,7 @@ class TFRecordTester(unittest.TestCase):
         self.object_category = "Airplane"
         self.num_points = 1024
         self.samples_per_shard = 512
-        self.tfrecord_dir = "./tfrecords"
+        self.tfrecord_dir = tempfile.mkdtemp(prefix='tfrecords_')
         self.val_split = 0.2
         self.batch_size = 16
 

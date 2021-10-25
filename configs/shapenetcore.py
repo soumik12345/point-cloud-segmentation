@@ -17,5 +17,7 @@ def get_config() -> ml_collections.ConfigDict:
 
     config.tfrecord_dir = "./tfrecords" # TFRecord dump dir
     config.samples_per_shard = 512 # Max number of data shards per TFRecord file
+    config.jitter_minval = -5e-3 # Point cloud jitter range lower limit
+    config.jitter_maxval = 5e-3 # Point cloud jitter range upper limit
 
     return config

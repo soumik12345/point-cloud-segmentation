@@ -140,7 +140,7 @@ class ShapeNetCoreTFRecordWriter:
         for index in range(num_tfrecords):
             point_cloud_shard = point_cloud_shards[index]
             label_cloud_shard = label_cloud_shards[index]
-            file_name = "shapenet-{:04d}-{:04d}.tfrec".format(lower_limit, upper_limit)
+            file_name = "shapenet-{}-{:04d}-{:04d}.tfrec".format(split, lower_limit, upper_limit)
             lower_limit += samples_per_shard
             upper_limit += samples_per_shard
             logging.info(f"Writing TFRecord File {file_name}")
