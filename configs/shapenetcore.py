@@ -5,7 +5,7 @@ def get_config() -> ml_collections.ConfigDict:
     config = ml_collections.ConfigDict()
     config.object_category = "Airplane"  # ShapeNet Category
     config.in_memory = True  # Flag: Use In-memory dataloader
-    config.batch_size = 8  # Batch Size
+    config.batch_size = 32  # Batch Size
     config.num_points = 1024  # Number of points to be sampled from a given point cloud
     config.val_split = 0.2  # Fraction representing Validation Split
 

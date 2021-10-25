@@ -51,16 +51,15 @@ def main(_):
         )
 
     # Define Dataloader
-    logging.info("Preparing data loader.")
+    batch_size = FLAGS.experiment_configs.batch_size * strategy.num_replicas_in_sync
+    logging.info(f"Preparing data loader with a batch size of {batch_size}.")
     tfrecord_loader = TFRecordLoader(
         tfrecord_dir=os.path.join(
             FLAGS.experiment_configs.artifact_location, "tfrecords"
         ),
         object_category=FLAGS.experiment_configs.object_category,
     )
-    train_dataset, val_dataset = tfrecord_loader.get_datasets(
-        batch_size=FLAGS.experiment_configs.batch_size * strategy.num_replicas_in_sync
-    )
+    train_dataset, val_dataset = tfrecord_loader.get_datasets(batch_size=batch_size)
 
     # Learning Rate scheduling callback
     logging.info("Initializing callbacks.")
