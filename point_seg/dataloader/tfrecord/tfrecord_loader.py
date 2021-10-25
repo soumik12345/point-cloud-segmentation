@@ -1,5 +1,4 @@
 import os
-from glob import glob
 import tensorflow as tf
 
 
@@ -38,7 +37,7 @@ class TFRecordLoader:
         return point_cloud, label_cloud
 
     def _generate_dataset(self, split: str, batch_size: int):
-        tfrecord_files = glob(
+        tfrecord_files = tf.io.gfile.glob(
             os.path.join(self.tfrecord_dir, self.object_category, split, "*.tfrec")
         )
         dataset = tf.data.TFRecordDataset(tfrecord_files)
