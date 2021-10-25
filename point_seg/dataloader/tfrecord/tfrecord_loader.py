@@ -1,5 +1,9 @@
 import os
 import tensorflow as tf
+from configs import shapenetcore
+
+
+_CFG = shapenetcore.get_config()
 
 
 class TFRecordLoader:
@@ -23,6 +27,11 @@ class TFRecordLoader:
         example = tf.io.parse_single_example(example, feature_description)
         point_cloud = tf.io.parse_tensor(example["point_cloud"], out_type=tf.float32)
         label_cloud = tf.io.parse_tensor(example["label_cloud"], out_type=tf.float32)
+        point_cloud.set_shape((_CFG.num_points, 3))
+        label_cloud.set_shape(
+            (_CFG.num_points, 5)
+        )  # The last dimension should come from metadata because number of
+        # unique labels vary across categories.
         return point_cloud, label_cloud
 
     def _augment(self, point_cloud, label_cloud):
@@ -36,7 +45,7 @@ class TFRecordLoader:
         point_cloud += noise[:, :, :3]
         return point_cloud, label_cloud
 
-    def _generate_dataset(self, split: str, batch_size: int):
+    def _generate_dataset(self, split: str, batch_size: int, drop_remainder: bool):
         tfrecord_files = tf.io.gfile.glob(
             os.path.join(self.tfrecord_dir, self.object_category, split, "*.tfrec")
         )
@@ -44,7 +53,7 @@ class TFRecordLoader:
         dataset = dataset.map(
             self._parse_tfrecord_fn, num_parallel_calls=tf.data.AUTOTUNE
         )
-        dataset = dataset.batch(batch_size=batch_size)
+        dataset = dataset.batch(batch_size=batch_size, drop_remainder=drop_remainder)
         dataset = (
             dataset.map(self._augment, num_parallel_calls=tf.data.AUTOTUNE)
             if split == "train"
@@ -52,7 +61,11 @@ class TFRecordLoader:
         )
         return dataset
 
-    def get_datasets(self, batch_size: int = 32):
-        train_dataset = self._generate_dataset(split="train", batch_size=batch_size)
-        val_dataset = self._generate_dataset(split="val", batch_size=batch_size)
+    def get_datasets(self, batch_size: int = 32, drop_remainder: bool = True):
+        train_dataset = self._generate_dataset(
+            split="train", batch_size=batch_size, drop_remainder=drop_remainder
+        )
+        val_dataset = self._generate_dataset(
+            split="val", batch_size=batch_size, drop_remainder=drop_remainder
+        )
         return train_dataset, val_dataset

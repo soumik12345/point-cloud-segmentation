@@ -5,6 +5,8 @@ python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 """
 
 import os
+
+import wandb.keras
 from absl import app
 from absl import flags
 from absl import logging
@@ -29,6 +31,8 @@ config_flags.DEFINE_config_file("experiment_configs")
 def main(_):
 
     strategy = utils.initialize_device()
+    batch_size = FLAGS.experiment_configs.batch_size * strategy.num_replicas_in_sync
+    FLAGS.experiment_configs["batch_size"] = batch_size
 
     # Initialize W&B
     if FLAGS.wandb_api_key is not None:
@@ -51,7 +55,6 @@ def main(_):
         )
 
     # Define Dataloader
-    batch_size = FLAGS.experiment_configs.batch_size * strategy.num_replicas_in_sync
     logging.info(f"Preparing data loader with a batch size of {batch_size}.")
     tfrecord_loader = TFRecordLoader(
         tfrecord_dir=os.path.join(
@@ -59,7 +62,10 @@ def main(_):
         ),
         object_category=FLAGS.experiment_configs.object_category,
     )
-    train_dataset, val_dataset = tfrecord_loader.get_datasets(batch_size=batch_size)
+    drop_remainder = True if FLAGS.experiment_configs.use_tpus else False
+    train_dataset, val_dataset = tfrecord_loader.get_datasets(
+        batch_size=batch_size, drop_remainder=drop_remainder
+    )
 
     # Learning Rate scheduling callback
     logging.info("Initializing callbacks.")
@@ -111,7 +117,12 @@ def main(_):
         train_dataset,
         validation_data=val_dataset,
         epochs=FLAGS.experiment_configs.epochs,
-        callbacks=[tb_callback, lr_callback, checkpoint_callback],
+        callbacks=[
+            tb_callback,
+            lr_callback,
+            checkpoint_callback,
+            wandb.keras.WandbCallback(),
+        ],
     )
     logging.info("Training complete.")
 
