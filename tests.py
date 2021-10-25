@@ -70,7 +70,7 @@ class TFRecordTester(unittest.TestCase):
         self.object_category = "Airplane"
         self.num_points = 1024
         self.samples_per_shard = 512
-        self.tfrecord_dir = tempfile.mkdtemp(prefix='tfrecords_')
+        self.tfrecord_dir = './tfrecords_dump'
         self.val_split = 0.2
         self.batch_size = 16
 
@@ -94,11 +94,11 @@ class TFRecordTester(unittest.TestCase):
         assert len(val_tfrecord_files) == 1
     
     def test_tfrecord_loader(self):
-        tfrecord_loader = TFRecordLoader(self.tfrecord_dir, self.object_category)
-        train_dataset, val_dataset = tfrecord_loader.get_datasets(batch_size=self.batch_size)
-        x, y = next(iter(train_dataset))
+        loader = TFRecordLoader(self.tfrecord_dir, self.object_category)
+        train_ds, val_ds = loader.get_datasets(batch_size=self.batch_size)
+        x, y = next(iter(train_ds))
         assert x.shape == (16, 1024, 3)
         assert y.shape == (16, 1024, 5)
-        x, y = next(iter(val_dataset))
+        x, y = next(iter(val_ds))
         assert x.shape == (16, 1024, 3)
         assert y.shape == (16, 1024, 5)
