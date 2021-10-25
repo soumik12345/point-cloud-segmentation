@@ -94,6 +94,11 @@ def main(_):
         save_weights_only=True,
     )
 
+    # Pack the callbacks as a list.
+    callback_list = [tb_callback, checkpoint_callback, lr_callback]
+    if FLAGS.wandb_api_key is not None:
+        callback_list.extend(wandb.keras.WandbCallback())
+
     # Define Model and Optimizer
     with strategy.scope():
         logging.info("Initializing segmentation model.")
@@ -117,12 +122,7 @@ def main(_):
         train_dataset,
         validation_data=val_dataset,
         epochs=FLAGS.experiment_configs.epochs,
-        callbacks=[
-            tb_callback,
-            lr_callback,
-            checkpoint_callback,
-            wandb.keras.WandbCallback(),
-        ],
+        callbacks=callback_list,
     )
     logging.info("Training complete.")
 
