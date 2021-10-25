@@ -45,7 +45,7 @@ def main(_):
         policy = mixed_precision.global_policy()
         assert policy.compute_dtype == "float16"
         assert policy.variable_dtype == "float32"
-    else:
+    elif FLAGS.experiment_configs.use_mp and FLAGS.experiment_configs.use_tpus:
         raise ValueError(
             "TPUs run with mixed-precision by default. No need to specify precision separately."
         )
