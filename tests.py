@@ -8,7 +8,7 @@ from point_seg import (
     ShapeNetCoreLoaderInMemory,
     ShapeNetCoreLoader,
     ShapeNetCoreTFRecordWriter,
-    TFRecordLoader
+    TFRecordLoader,
 )
 from point_seg import models
 
@@ -70,7 +70,7 @@ class TFRecordTester(unittest.TestCase):
         self.object_category = "Airplane"
         self.num_points = 1024
         self.samples_per_shard = 512
-        self.tfrecord_dir = '/tmp/tfrecords'
+        self.tfrecord_dir = "/tmp/tfrecords"
         self.val_split = 0.2
         self.batch_size = 16
 
@@ -92,7 +92,7 @@ class TFRecordTester(unittest.TestCase):
         )
         assert len(train_tfrecord_files) == 1
         assert len(val_tfrecord_files) == 1
-    
+
     def test_tfrecord_loader(self):
         loader = TFRecordLoader(self.tfrecord_dir, self.object_category)
         train_ds, val_ds = loader.get_datasets(batch_size=self.batch_size)

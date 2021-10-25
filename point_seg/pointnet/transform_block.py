@@ -22,10 +22,9 @@ class OrthogonalRegularizer(regularizers.Regularizer):
 
     def get_config(self):
         config = super(OrthogonalRegularizer, self).get_config()
-        config.update({
-            "num_features":self.num_features,
-            "l2reg": self.l2reg,
-        })
+        config.update(
+            {"num_features": self.num_features, "l2reg": self.l2reg,}
+        )
         return config
 
 

@@ -13,9 +13,11 @@ def get_config() -> ml_collections.ConfigDict:
     config.drop_every = 20  # Epochs after which Learning Rate is dropped
     config.decay_factor = 0.5  # Learning Rate Decay Factor
     config.epochs = 50  # Number of training epochs
-    config.use_mp = True  # Flag: Use mixed-precision or not
+    config.use_mp = False  # Flag: Use mixed-precision or not
+    config.use_tpus = True # Flag: Use TPUs or not
 
-    config.tfrecord_dir = "./tfrecords" # TFRecord dump dir
+    config.artifact_location = "gs://pointnet-segmentation"  # Artifact dump dir (using a GCS location is not a requirement
+    # GPUs but for running on TPUs data must be coming from a GCS location).
     config.samples_per_shard = 512 # Max number of data shards per TFRecord file
     config.jitter_minval = -5e-3 # Point cloud jitter range lower limit
     config.jitter_maxval = 5e-3 # Point cloud jitter range upper limit
