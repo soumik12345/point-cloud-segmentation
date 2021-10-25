@@ -70,7 +70,7 @@ class TFRecordTester(unittest.TestCase):
         self.object_category = "Airplane"
         self.num_points = 1024
         self.samples_per_shard = 512
-        self.tfrecord_dir = './tfrecords_dump'
+        self.tfrecord_dir = '/tmp/tfrecords'
         self.val_split = 0.2
         self.batch_size = 16
 

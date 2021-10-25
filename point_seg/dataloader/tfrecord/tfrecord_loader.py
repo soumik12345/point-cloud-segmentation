@@ -27,9 +27,9 @@ class TFRecordLoader:
         return point_cloud, label_cloud
 
     def _augment(self, point_cloud, label_cloud):
-        """Jitter point and label clouds."""
+        """Jitter point clouds"""
         noise = tf.random.uniform(
-            tf.shape(label_cloud),
+            tf.shape(point_cloud),
             self.jitter_minval,
             self.jitter_maxval,
             dtype=tf.float32,
