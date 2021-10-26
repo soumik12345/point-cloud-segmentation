@@ -8,6 +8,7 @@ from absl import app
 from absl import flags
 
 from ml_collections.config_flags import config_flags
+import os
 
 from point_seg.dataloader import ShapeNetCoreTFRecordWriter
 
@@ -24,8 +25,10 @@ def main(_):
     tfrecord_writer.load_data()
     tfrecord_writer.write_tfrecords(
         samples_per_shard=FLAGS.experiment_configs.samples_per_shard,
-        tfrecord_dir=FLAGS.experiment_configs.tfrecord_dir,
-        val_split=FLAGS.experiment_configs.val_split
+        tfrecord_dir=os.path.join(
+            FLAGS.experiment_configs.artifact_location, "tfrecords"
+        ),
+        val_split=FLAGS.experiment_configs.val_split,
     )
 
 

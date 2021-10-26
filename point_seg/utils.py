@@ -2,6 +2,7 @@ import os
 import wandb
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from typing import Dict, List
 
 import plotly.express as px
@@ -86,3 +87,17 @@ def visualize_data_plotly(point_cloud, labels, unique_labels: List[str], colors:
 def make_dir(dir_name):
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
+
+
+def initialize_device():
+    try:
+        tpu = tf.distribute.cluster_resolver.TPUClusterResolver()
+        tf.config.experimental_connect_to_cluster(tpu)
+        tf.tpu.experimental.initialize_tpu_system(tpu)
+        strategy = tf.distribute.TPUStrategy(tpu)
+    except ValueError:
+        if len(tf.config.list_physical_devices("GPU")) > 1:
+            strategy = tf.distribute.MirroredStrategy()
+        else:
+            strategy = tf.distribute.OneDeviceStrategy(device="/gpu:0")
+    return strategy

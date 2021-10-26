@@ -2,7 +2,6 @@ import os
 import json
 import random
 import numpy as np
-import pandas as pd
 from glob import glob
 from tqdm import tqdm
 from absl import logging
@@ -107,7 +106,6 @@ class ShapeNetCoreTFRecordWriter:
                 for label in self.labels:
                     for i, data in enumerate(label_data[label]):
                         label_map[i] = label if data == 1 else label_map[i]
-                # label_data = label_encoder.transform(label_map)
                 label_data = [
                     self.labels.index(label) if label != "none" else len(self.labels)
                     for label in label_map
@@ -140,7 +138,9 @@ class ShapeNetCoreTFRecordWriter:
         for index in range(num_tfrecords):
             point_cloud_shard = point_cloud_shards[index]
             label_cloud_shard = label_cloud_shards[index]
-            file_name = "shapenet-{}-{:04d}-{:04d}.tfrec".format(split, lower_limit, upper_limit)
+            file_name = "shapenet-{}-{}-{:04d}-{:04d}.tfrec".format(
+                self.n_sampled_points, split, lower_limit, upper_limit
+            )
             lower_limit += samples_per_shard
             upper_limit += samples_per_shard
             logging.info(f"Writing TFRecord File {file_name}")
