@@ -2,6 +2,9 @@
 
 <img src="https://github.com/soumik12345/point-cloud-segmentation/workflows/tests/badge.svg" alt="build-failing">
 
+This repository provides a TF2 implementation of PointNet<sup>1</sup> for segmenting point clouds. Our implementation is fully supported on
+TPUs allowing you to train models faster. Distributed training on GPUs is also supported and so is single-GPU training. 
+
 ## Running using Docker
 
 - Build image using `docker build -t point-cloud-image .`
@@ -57,3 +60,8 @@ Example:
 the `batch_size` denoted here will be multiplied by the number of workers you have. 
 * Using a Google Cloud Storage (GCS) based `artifact_location` is not a requirement if you are using GPU(s). But for 
 TPUs, it's a requirement. 
+
+## References
+
+[1] PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation; Charles R. Qi, Hao Su, Kaichun Mo, Leonidas J. Guibas;
+CVPR 2017; https://arxiv.org/abs/1612.00593.
