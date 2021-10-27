@@ -51,5 +51,9 @@ Example:
   python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 ```
 
-**Note** that the `batch_size` here denotes local batch size. If you are using single-host multi-worker distributed training,
+## Notes
+
+* The `batch_size` here denotes local batch size. If you are using single-host multi-worker distributed training,
 the `batch_size` denoted here will be multiplied by the number of workers you have. 
+* Using a Google Cloud Storage (GCS) based `artifact_location` is not a requirement if you are using GPU(s). But for 
+TPUs, it's a requirement. 
