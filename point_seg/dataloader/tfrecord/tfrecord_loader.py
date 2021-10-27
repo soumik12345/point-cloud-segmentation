@@ -20,7 +20,7 @@ class TFRecordLoader:
         self.object_category = object_category
         self.jitter_minval = jitter_minval
         self.jitter_maxval = jitter_maxval
-        self._load_metadata()
+        self.metadata = self._load_metadata()
 
     def _load_metadata(self):
         metadata_file = tf.keras.utils.get_file(
