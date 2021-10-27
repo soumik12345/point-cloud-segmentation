@@ -12,7 +12,7 @@ def get_config() -> ml_collections.ConfigDict:
     config.initial_lr = 1e-3  # Initial Learning Rate
     config.drop_every = 20  # Epochs after which Learning Rate is dropped
     config.decay_factor = 0.5  # Learning Rate Decay Factor
-    config.epochs = 50  # Number of training epochs
+    config.epochs = 100  # Number of training epochs
     config.use_mp = False  # Flag: Use mixed-precision or not
     config.use_tpus = True  # Flag: Use TPUs or not
 
