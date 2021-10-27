@@ -83,15 +83,14 @@ def main(_):
 
     # Tensorboard Callback
     timestamp = datetime.utcnow().strftime("%y%m%d-%H%M%S")
-    logs_dir = f"logs_{timestamp}"
+    logs_dir = f"logs_{FLAGS.experiment_configs.object_category}_{timestamp}"
     logs_dir = os.path.join(FLAGS.experiment_configs.artifact_location, logs_dir)
     tb_callback = callbacks.TensorBoard(log_dir=logs_dir)
 
     # Model Checkpoint Callback
     checkpoint_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        "checkpoints",
-        f"{FLAGS.experiment_configs.object_category}_{timestamp}",
+        f"checkpoints_{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=checkpoint_path, save_best_only=True, save_weights_only=True,
@@ -127,7 +126,7 @@ def main(_):
     logging.info("Training complete, serializing model with the best checkpoint.")
     serialization_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        "final_model" f"{FLAGS.experiment_configs.object_category}_{timestamp}",
+        f"final_model_{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
     model.load_weights(checkpoint_path)
     model.save(serialization_path)
