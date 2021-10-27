@@ -1,9 +1,9 @@
 import os
 import glob
 import json
-import logging
 import tensorflow as tf
 from configs import shapenetcore
+from absl import logging
 
 
 _CFG = shapenetcore.get_config()
