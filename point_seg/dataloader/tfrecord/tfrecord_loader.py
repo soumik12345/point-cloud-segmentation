@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 import tensorflow as tf
 from configs import shapenetcore
@@ -62,9 +63,9 @@ class TFRecordLoader:
         return point_cloud, label_cloud
 
     def _generate_dataset(self, split: str, batch_size: int, drop_remainder: bool):
-        tfrecord_files = tf.io.gfile.glob(
-            os.path.join(self.tfrecord_dir, self.object_category, split, "*.tfrec")
-        )
+        tfrecord_loc = os.path.join(
+            self.tfrecord_dir, self.object_category, split, "*.tfrec")
+        tfrecord_files = tf.io.gfile.glob(tfrecord_loc) if 'gs://' in tfrecord_loc else glob.glob(tfrecord_loc)
         dataset = tf.data.TFRecordDataset(tfrecord_files)
         dataset = dataset.map(
             self._parse_tfrecord_fn, num_parallel_calls=tf.data.AUTOTUNE
