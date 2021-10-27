@@ -1,4 +1,5 @@
 import os
+import json
 import tensorflow as tf
 from configs import shapenetcore
 
@@ -18,6 +19,12 @@ class TFRecordLoader:
         self.object_category = object_category
         self.jitter_minval = jitter_minval
         self.jitter_maxval = jitter_maxval
+        self.metadata = self._load_metadata()
+    
+    def _load_metadata(self):
+        with open(os.path.join(self.dataset_path, "metadata.json")) as json_file:
+            metadata = json.load(json_file)
+        return metadata
 
     def _parse_tfrecord_fn(self, example):
         feature_description = {
@@ -29,7 +36,7 @@ class TFRecordLoader:
         label_cloud = tf.io.parse_tensor(example["label_cloud"], out_type=tf.float32)
         point_cloud.set_shape((_CFG.num_points, 3))
         label_cloud.set_shape(
-            (_CFG.num_points, 5)
+            (_CFG.num_points, len(self.metadata[self.object_category]["lables"]) + 1)
         )  # The last dimension should come from metadata because number of
         # unique labels vary across categories.
         return point_cloud, label_cloud
