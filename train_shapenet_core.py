@@ -1,6 +1,6 @@
 r"""Train a Pointnet-based Shape Segmentation Model.
 
-Sample Useage:
+Sample Usage:
 python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 """
 
