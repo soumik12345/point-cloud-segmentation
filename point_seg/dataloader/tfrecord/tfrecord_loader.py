@@ -1,6 +1,7 @@
 import os
 import glob
 import json
+import logging
 import tensorflow as tf
 from configs import shapenetcore
 
@@ -63,8 +64,14 @@ class TFRecordLoader:
 
     def _generate_dataset(self, split: str, batch_size: int, drop_remainder: bool):
         tfrecord_loc = os.path.join(
-            self.tfrecord_dir, self.object_category, split, "*.tfrec")
-        tfrecord_files = tf.io.gfile.glob(tfrecord_loc) if 'gs://' in tfrecord_loc else glob.glob(tfrecord_loc)
+            self.tfrecord_dir, self.object_category, split, "*.tfrec"
+        )
+        tfrecord_files = (
+            tf.io.gfile.glob(tfrecord_loc)
+            if "gs://" in tfrecord_loc
+            else glob.glob(tfrecord_loc)
+        )
+        logging.info(f"{split} - Total TFRecord files found: {tfrecord_files}.")
         dataset = tf.data.TFRecordDataset(tfrecord_files)
         dataset = dataset.map(
             self._parse_tfrecord_fn, num_parallel_calls=tf.data.AUTOTUNE
