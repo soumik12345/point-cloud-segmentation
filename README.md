@@ -17,7 +17,7 @@ Usage: create_tfrecords.py [OPTIONS]
 Options:
   --experiment_configs.val_split             Validation Split (DEFAULT: 0.2)
   --experiment_configs.object_category       ShapenetCore object category (DEFAULT: 'Airplane')
-  --experiment_configs.artifact_location     TFRecord dump dir (DEFAULT: './tfrecords')
+  --experiment_configs.artifact_location     TFRecord dump dir (DEFAULT: 'gs://pointnet-segmentation/tfrecords')
   --experiment_configs.metadata_url          Metadata URL
   --experiment_configs.samples_per_shard     Max number of data samples per TFRecord file (DEFAULT: 512)
 
@@ -43,9 +43,13 @@ Options:
   --experiment_configs.initial_lr            Initial Learning Rate (DEFAULT: 1e-3)
   --experiment_configs.drop_every            Epochs after which Learning Rate is dropped (DEFAULT: 20)
   --experiment_configs.decay_factor          Learning Rate Decay Factor (DEFAULT: 0.5)
-  --experiment_configs.epochs                Number of training epochs (DEFAULT: 50)
-  --experiment_configs.use_mp                Flag: Use mixed-precision or not (DEFAULT: True)
+  --experiment_configs.epochs                Number of training epochs (DEFAULT: 100)
+  --experiment_configs.use_mp                Flag: Use mixed-precision or not (DEFAULT: False)
+  --experiment_configs.use_tpus              Flag: Use mixed-precision or not (DEFAULT: True)
 
 Example:
   python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 ```
+
+**Note** that the `batch_size` here denotes local batch size. If you are using single-host multi-worker distributed training,
+the `batch_size` denoted here will be multiplied by the number of workers you have. 
