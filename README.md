@@ -1,9 +1,12 @@
 # Point Cloud Segmentation
 
+_**By [Soumik Rakshit](https://github.com/soumik12345) & [Sayak Paul](https://github.com/sayakpaul)**_
+
 <img src="https://github.com/soumik12345/point-cloud-segmentation/workflows/tests/badge.svg" alt="build-failing">
 
 This repository provides a TF2 implementation of PointNet<sup>1</sup> for segmenting point clouds. Our implementation is fully supported on
-TPUs allowing you to train models faster. Distributed training on GPUs is also supported and so is single-GPU training. 
+TPUs allowing you to train models faster. Distributed training (single-device multi-worker) on GPUs is also supported and so is single-GPU
+training. 
 
 To get an understanding of PointNet for segmentation, follow this blog post from keras.io: [Point cloud segmentation with PointNet](https://keras.io/examples/vision/pointnet_segmentation/).
 
