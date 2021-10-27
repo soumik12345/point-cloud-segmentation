@@ -32,10 +32,10 @@ Example:
 Usage: train_shapenet_core.py [OPTIONS]
 
 Options:
+  --experiment_configs                       Experiment configs (configs/shapenetcore.py)
   --experiment_configs.wandb_project_name    Project Name (DEFAULT: pointnet_shapenet_core)
   --experiment_configs.experiment_name       Experiment Name (DEFAULT: shapenet_core_experiment)
   --experiment_configs.wandb_api_key         W&B API Key (OPTIONAL)
-  --experiment_configs.experiment_configs    Experiment configs (configs/shapenetcore.py)
   --experiment_configs.object_category       ShapenetCore object category (DEFAULT: 'Airplane')
   --experiment_configs.in_memory             Flag: Use In-memory dataloader (DEFAULT: True)
   --experiment_configs.batch_size            Batch Size (DEFAULT: 32)
