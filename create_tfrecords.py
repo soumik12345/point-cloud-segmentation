@@ -1,6 +1,6 @@
 r"""Create TFRecords for a given category of point clouds in the ShapeNetCore dataset.
 
-Sample Useage:
+Sample Usage:
 python create_tfrecords.py --experiment_configs configs/shapenetcore.py
 """
 
