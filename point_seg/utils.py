@@ -47,39 +47,53 @@ def init_wandb(project_name, experiment_name, wandb_api_key, config: Dict):
     """
     if project_name is not None and experiment_name is not None:
         os.environ["WANDB_API_KEY"] = wandb_api_key
-        wandb.init(project=project_name, name=experiment_name, config=config)
+        wandb.init(
+            project=project_name, name=experiment_name, config=config, entity="pointnet"
+        )
 
 
-def visualize_data_plotly(point_cloud, labels, unique_labels: List[str], colors: List[str]):
+def visualize_data_plotly(
+    point_cloud, labels, unique_labels: List[str], colors: List[str]
+):
     fig = px.scatter_3d(
         pd.DataFrame(
             data={
-                'x': point_cloud[:, 0],
-                'y': point_cloud[:, 1],
-                'z': point_cloud[:, 2],
-                'label': labels
+                "x": point_cloud[:, 0],
+                "y": point_cloud[:, 1],
+                "z": point_cloud[:, 2],
+                "label": labels,
             }
-        ), x="x", y="y", z="z",
-        color="label", labels={"label": "Label"},
+        ),
+        x="x",
+        y="y",
+        z="z",
+        color="label",
+        labels={"label": "Label"},
         color_discrete_sequence=colors,
-        category_orders={"label": unique_labels}
+        category_orders={"label": unique_labels},
     )
     fig.show()
 
 
-def visualize_data_plotly(point_cloud, labels, unique_labels: List[str], colors: List[str]):
+def visualize_data_plotly(
+    point_cloud, labels, unique_labels: List[str], colors: List[str]
+):
     fig = px.scatter_3d(
         pd.DataFrame(
             data={
-                'x': point_cloud[:, 0],
-                'y': point_cloud[:, 1],
-                'z': point_cloud[:, 2],
-                'label': labels
+                "x": point_cloud[:, 0],
+                "y": point_cloud[:, 1],
+                "z": point_cloud[:, 2],
+                "label": labels,
             }
-        ), x="x", y="y", z="z",
-        color="label", labels={"label": "Label"},
+        ),
+        x="x",
+        y="y",
+        z="z",
+        color="label",
+        labels={"label": "Label"},
         color_discrete_sequence=colors,
-        category_orders={"label": unique_labels}
+        category_orders={"label": unique_labels},
     )
     fig.show()
 

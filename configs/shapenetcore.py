@@ -16,6 +16,7 @@ def get_config() -> ml_collections.ConfigDict:
     config.use_mp = False  # Flag: Use mixed-precision or not
     config.use_tpus = True  # Flag: Use TPUs or not
 
+    config.metadata_url = "https://github.com/soumik12345/point-cloud-segmentation/releases/download/v0.2/metadata.json" # Metadata URL
     config.artifact_location = "gs://pointnet-segmentation"  # Artifact dump dir (using a GCS location is not a requirement
     # GPUs but for running on TPUs data must be coming from a GCS location).
     config.samples_per_shard = 512  # Max number of data shards per TFRecord file
