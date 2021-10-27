@@ -94,6 +94,8 @@ class ShapeNetCoreTFRecordWriter:
             points_files = points_files[:limit]
         for point_file in tqdm(points_files):
             point_cloud = np.loadtxt(point_file)
+            if point_cloud.shape[0] < self.n_sampled_points:
+                continue
             file_id = point_file.split("/")[-1].split(".")[0]
             label_data, num_labels = {}, 0
             for label in self.labels:
