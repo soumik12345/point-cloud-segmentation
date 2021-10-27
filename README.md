@@ -18,6 +18,7 @@ Options:
   --experiment_configs.val_split             Validation Split (DEFAULT: 0.2)
   --experiment_configs.object_category       ShapenetCore object category (DEFAULT: 'Airplane')
   --experiment_configs.artifact_location     TFRecord dump dir (DEFAULT: './tfrecords')
+  --experiment_configs.metadata_url          Metadata URL
   --experiment_configs.samples_per_shard     Max number of data samples per TFRecord file (DEFAULT: 512)
 
 Example:
