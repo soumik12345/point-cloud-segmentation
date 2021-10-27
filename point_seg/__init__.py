@@ -5,3 +5,4 @@ from .dataloader import (
     TFRecordLoader,
 )
 from .pointnet import models
+from .pointnet import transform_block
