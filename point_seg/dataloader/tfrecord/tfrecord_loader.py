@@ -11,7 +11,6 @@ _CFG = shapenetcore.get_config()
 class TFRecordLoader:
     def __init__(
         self,
-        metadata_url: str,
         tfrecord_dir: str = "./tfrecords",
         object_category: str = "Airplane",
         jitter_minval: float = -5e-3,
@@ -21,12 +20,12 @@ class TFRecordLoader:
         self.object_category = object_category
         self.jitter_minval = jitter_minval
         self.jitter_maxval = jitter_maxval
-        metadata_file = self._load_metadata(metadata_url)
+        self._load_metadata()
 
-    def _load_metadata(self, metadata_url: str):
+    def _load_metadata(self):
         metadata_file = tf.keras.utils.get_file(
             fname="metadata.json",
-            origin=metadata_url,
+            origin=_CFG.metadata_url,
             cache_subdir="datasets",
             hash_algorithm="auto",
             extract=False,

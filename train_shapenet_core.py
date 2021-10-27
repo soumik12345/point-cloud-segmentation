@@ -57,7 +57,6 @@ def main(_):
     # Define Dataloader
     logging.info(f"Preparing data loader with a batch size of {batch_size}.")
     tfrecord_loader = TFRecordLoader(
-        metadata_url=FLAGS.experiment_configs.metadata_url,
         tfrecord_dir=os.path.join(
             FLAGS.experiment_configs.artifact_location, "tfrecords"
         ),
