@@ -19,10 +19,15 @@ class TFRecordLoader:
         self.object_category = object_category
         self.jitter_minval = jitter_minval
         self.jitter_maxval = jitter_maxval
-        self.metadata = self._load_metadata()
-    
-    def _load_metadata(self):
-        with open(os.path.join(self.tfrecord_dir, "metadata.json")) as json_file:
+        metadata_file = os.path.join(self.tfrecord_dir, "metadata.json")
+        self.metadata = (
+            self._load_metadata(metadata_dir=metadata_file)
+            if os.path.isfile(metadata_file)
+            else "/tmp/.keras/datasets/PartAnnotation/metadata.json"
+        )
+
+    def _load_metadata(self, metadata_dir: str):
+        with open(metadata_dir) as json_file:
             metadata = json.load(json_file)
         return metadata
 
