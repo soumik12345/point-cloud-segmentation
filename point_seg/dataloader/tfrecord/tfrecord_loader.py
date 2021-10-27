@@ -22,7 +22,7 @@ class TFRecordLoader:
         self.metadata = self._load_metadata()
     
     def _load_metadata(self):
-        with open(os.path.join(self.dataset_path, "metadata.json")) as json_file:
+        with open(os.path.join(self.tfrecord_dir, "metadata.json")) as json_file:
             metadata = json.load(json_file)
         return metadata
 
