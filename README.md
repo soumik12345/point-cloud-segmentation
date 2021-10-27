@@ -5,6 +5,8 @@
 This repository provides a TF2 implementation of PointNet<sup>1</sup> for segmenting point clouds. Our implementation is fully supported on
 TPUs allowing you to train models faster. Distributed training on GPUs is also supported and so is single-GPU training. 
 
+To get an understanding of PointNet for segmentation, follow this blog post from keras.io: [Point cloud segmentation with PointNet](https://keras.io/examples/vision/pointnet_segmentation/).
+
 ## Running using Docker
 
 - Build image using `docker build -t point-cloud-image .`
@@ -65,3 +67,7 @@ TPUs, it's a requirement.
 
 [1] PointNet: Deep Learning on Point Sets for 3D Classification and Segmentation; Charles R. Qi, Hao Su, Kaichun Mo, Leonidas J. Guibas;
 CVPR 2017; https://arxiv.org/abs/1612.00593.
+
+## Acknowledgements
+
+We are thankful to the [GDE program](https://developers.google.com/programs/experts/) for providing us GCP credits.
