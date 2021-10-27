@@ -47,8 +47,7 @@ class TFRecordLoader:
         point_cloud.set_shape((_CFG.num_points, 3))
         label_cloud.set_shape(
             (_CFG.num_points, len(self.metadata[self.object_category]["lables"]) + 1)
-        )  # The last dimension should come from metadata because number of
-        # unique labels vary across categories.
+        )
         return point_cloud, label_cloud
 
     def _augment(self, point_cloud, label_cloud):
