@@ -55,6 +55,9 @@ def main(_):
         )
 
     # Define Dataloader
+    logging.info(
+        f"Object category received: {FLAGS.experiment_configs.object_category}."
+    )
     logging.info(f"Preparing data loader with a batch size of {batch_size}.")
     tfrecord_loader = TFRecordLoader(
         tfrecord_dir=os.path.join(
