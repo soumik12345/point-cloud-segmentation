@@ -85,13 +85,13 @@ def main(_):
     tb_callback = callbacks.TensorBoard(log_dir=logs_dir)
 
     # Model Checkpoint Callback
+    checkpoint_path = os.path.join(
+        FLAGS.experiment_configs.artifact_location,
+        "checkpoints",
+        f"{FLAGS.experiment_configs.object_category}_{timestamp}",
+    )
     checkpoint_callback = callbacks.ModelCheckpoint(
-        filepath=os.path.join(
-            FLAGS.experiment_configs.artifact_location,
-            f"checkpoints_{timestamp}",
-            "model_{epoch}",
-        ),
-        save_weights_only=True,
+        filepath=checkpoint_path, save_best_only=True, save_weights_only=True,
     )
 
     # Pack the callbacks as a list.
@@ -102,10 +102,7 @@ def main(_):
     # Define Model and Optimizer
     with strategy.scope():
         logging.info("Initializing segmentation model.")
-        optimizer = optimizers.Adam(
-            learning_rate=FLAGS.experiment_configs.initial_lr
-            * strategy.num_replicas_in_sync
-        )
+        optimizer = optimizers.Adam(learning_rate=FLAGS.experiment_configs.initial_lr)
         _, y = next(iter(train_dataset))
         num_classes = y.shape[-1]
         model = models.get_shape_segmentation_model(
@@ -124,7 +121,14 @@ def main(_):
         epochs=FLAGS.experiment_configs.epochs,
         callbacks=callback_list,
     )
-    logging.info("Training complete.")
+    logging.info("Training complete, serializing model with the best checkpoint.")
+    serialization_path = os.path.join(
+        FLAGS.experiment_configs.artifact_location,
+        "final_model" f"{FLAGS.experiment_configs.object_category}_{timestamp}",
+    )
+    model.load_weights(checkpoint_path)
+    model.save(serialization_path)
+    logging.info(f"Model serialized to {serialization_path}.")
 
 
 if __name__ == "__main__":
