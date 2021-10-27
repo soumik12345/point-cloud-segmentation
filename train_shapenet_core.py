@@ -128,6 +128,11 @@ def main(_):
         FLAGS.experiment_configs.artifact_location,
         f"final_model_{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
+
+    # Since the model contains a custom regularizer, during loading the model we need to do the following:
+    # model = keras.models.load_model(filepath,
+    #   custom_objects={"OrthogonalRegularizer": transform_block.OrthogonalRegularizer}
+    # )
     model.load_weights(checkpoint_path)
     model.save(serialization_path)
     logging.info(f"Model serialized to {serialization_path}.")
