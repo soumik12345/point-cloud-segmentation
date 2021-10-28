@@ -89,7 +89,8 @@ def main(_):
     # Model Checkpoint Callback
     checkpoint_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        f"checkpoints_{FLAGS.experiment_configs.object_category}_{timestamp}",
+        "checkpoints",
+        f"{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=checkpoint_path, save_best_only=True, save_weights_only=True,
