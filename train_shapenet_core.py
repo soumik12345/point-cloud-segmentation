@@ -28,20 +28,33 @@ config_flags.DEFINE_config_file("experiment_configs")
 
 
 def main(_):
+    if FLAGS.experiment_configs.in_memory and FLAGS.experiment_configs.use_tpus:
+        raise ValueError(
+            "In-Memory Data Loading cannot be used with TPUs. Please use GCS."
+        )
 
+    # Get the current timestamp
+    timestamp = datetime.utcnow().strftime("%y%m%d-%H%M%S")
+
+    # Detect strategy
     strategy = utils.initialize_device()
     batch_size = FLAGS.experiment_configs.batch_size * strategy.num_replicas_in_sync
     FLAGS.experiment_configs["batch_size"] = batch_size
+
+    # Determine the artifact location
+    if not FLAGS.experiment_configs.use_tpus:
+        FLAGS.experiment_configs.artifact_location = "."
 
     # Initialize W&B
     if FLAGS.wandb_api_key is not None:
         utils.init_wandb(
             FLAGS.wandb_project_name,
-            FLAGS.experiment_configs.object_category,
+            f"{FLAGS.experiment_configs.object_category}_{timestamp}",
             FLAGS.wandb_api_key,
             FLAGS.experiment_configs.to_dict(),
         )
 
+    # Set precision.
     if FLAGS.experiment_configs.use_mp and not FLAGS.experiment_configs.use_tpus:
         mixed_precision.set_global_policy("mixed_float16")
         logging.info("Using mixed-precision.")
@@ -93,15 +106,16 @@ def main(_):
     )
 
     # Tensorboard Callback
-    timestamp = datetime.utcnow().strftime("%y%m%d-%H%M%S")
-    logs_dir = f"logs_{FLAGS.experiment_configs.object_category}_{timestamp}"
+    logs_dir = os.path.join(
+        "logs", f"{FLAGS.experiment_configs.object_category}_{timestamp}"
+    )
     logs_dir = os.path.join(FLAGS.experiment_configs.artifact_location, logs_dir)
     tb_callback = callbacks.TensorBoard(log_dir=logs_dir)
 
     # Model Checkpoint Callback
     checkpoint_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        "checkpoints",
+        "training_checkpoints",
         f"{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
     checkpoint_callback = callbacks.ModelCheckpoint(
@@ -138,7 +152,8 @@ def main(_):
     logging.info("Training complete, serializing model with the best checkpoint.")
     serialization_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        f"final_model_{FLAGS.experiment_configs.object_category}_{timestamp}",
+        "final_models",
+        f"{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
 
     # Since the model contains a custom regularizer, during loading the model we need to do the following:
