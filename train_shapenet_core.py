@@ -17,7 +17,7 @@ from ml_collections.config_flags import config_flags
 from tensorflow.keras import optimizers, callbacks
 from tensorflow.keras import mixed_precision
 
-from point_seg import TFRecordLoader
+from point_seg import TFRecordLoader, ShapeNetCoreLoaderInMemory
 from point_seg import models, utils
 
 
@@ -58,16 +58,28 @@ def main(_):
         f"Object category received: {FLAGS.experiment_configs.object_category}."
     )
     logging.info(f"Preparing data loader with a batch size of {batch_size}.")
-    tfrecord_loader = TFRecordLoader(
-        tfrecord_dir=os.path.join(
-            FLAGS.experiment_configs.artifact_location, "tfrecords"
-        ),
-        object_category=FLAGS.experiment_configs.object_category,
-    )
-    drop_remainder = True if FLAGS.experiment_configs.use_tpus else False
-    train_dataset, val_dataset = tfrecord_loader.get_datasets(
-        batch_size=batch_size, drop_remainder=drop_remainder
-    )
+    train_dataset, val_dataset = None, None
+    if FLAGS.experiment_configs.in_memory:
+        data_loader = ShapeNetCoreLoaderInMemory(
+            object_category=FLAGS.experiment_configs.object_category,
+            n_sampled_points=FLAGS.experiment_configs.num_points,
+        )
+        data_loader.load_data()
+        train_dataset, val_dataset = data_loader.get_datasets(
+            val_split=FLAGS.experiment_configs.val_split,
+            batch_size=FLAGS.experiment_configs.batch_size,
+        )
+    else:
+        tfrecord_loader = TFRecordLoader(
+            tfrecord_dir=os.path.join(
+                FLAGS.experiment_configs.artifact_location, "tfrecords"
+            ),
+            object_category=FLAGS.experiment_configs.object_category,
+        )
+        drop_remainder = True if FLAGS.experiment_configs.use_tpus else False
+        train_dataset, val_dataset = tfrecord_loader.get_datasets(
+            batch_size=batch_size, drop_remainder=drop_remainder
+        )
 
     # Learning Rate scheduling callback
     logging.info("Initializing callbacks.")
