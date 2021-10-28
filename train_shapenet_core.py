@@ -1,6 +1,6 @@
 r"""Train a Pointnet-based Shape Segmentation Model.
 
-Sample Usage:
+Sample Useage:
 python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 """
 
@@ -17,12 +17,13 @@ from ml_collections.config_flags import config_flags
 from tensorflow.keras import optimizers, callbacks
 from tensorflow.keras import mixed_precision
 
-from point_seg import TFRecordLoader
+from point_seg import TFRecordLoader, ShapeNetCoreLoaderInMemory
 from point_seg import models, utils
 
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("wandb_project_name", "pointnet_shapenet_core", "W&B Project Name")
+flags.DEFINE_string("experiment_name", "shapenet_core_experiment", "Experiment Name")
 flags.DEFINE_string("wandb_api_key", None, "WandB API Key")
 config_flags.DEFINE_config_file("experiment_configs")
 
@@ -37,7 +38,7 @@ def main(_):
     if FLAGS.wandb_api_key is not None:
         utils.init_wandb(
             FLAGS.wandb_project_name,
-            FLAGS.experiment_configs.object_category,
+            FLAGS.experiment_name,
             FLAGS.wandb_api_key,
             FLAGS.experiment_configs.to_dict(),
         )
@@ -54,25 +55,37 @@ def main(_):
         )
 
     # Define Dataloader
-    logging.info(
-        f"Object category received: {FLAGS.experiment_configs.object_category}."
-    )
     logging.info(f"Preparing data loader with a batch size of {batch_size}.")
-    tfrecord_loader = TFRecordLoader(
-        tfrecord_dir=os.path.join(
-            FLAGS.experiment_configs.artifact_location, "tfrecords"
-        ),
-        object_category=FLAGS.experiment_configs.object_category,
-    )
-    drop_remainder = True if FLAGS.experiment_configs.use_tpus else False
-    train_dataset, val_dataset = tfrecord_loader.get_datasets(
-        batch_size=batch_size, drop_remainder=drop_remainder
-    )
+    
+    train_dataset, val_dataset = None, None
+    
+    if FLAGS.experiment_configs.use_tpus:
+        tfrecord_loader = TFRecordLoader(
+            tfrecord_dir=os.path.join(
+                FLAGS.experiment_configs.artifact_location, "tfrecords"
+            ),
+            object_category=FLAGS.experiment_configs.object_category,
+        )
+        drop_remainder = True if FLAGS.experiment_configs.use_tpus else False
+        train_dataset, val_dataset = tfrecord_loader.get_datasets(
+            batch_size=batch_size, drop_remainder=drop_remainder
+        )
+    elif FLAGS.experiment_configs.use_in_memory_loader:
+        data_loader = ShapeNetCoreLoaderInMemory(
+            object_category=FLAGS.experiment_configs.object_category,
+            n_sampled_points=FLAGS.experiment_configs.num_points
+        )
+        data_loader.load_data()
+        train_dataset, val_dataset = data_loader.get_datasets(
+            val_split=FLAGS.experiment_configs.val_split,
+            batch_size=FLAGS.experiment_configs.batch_size
+        )
+    
 
     # Learning Rate scheduling callback
     logging.info("Initializing callbacks.")
     lr_scheduler = utils.StepDecay(
-        FLAGS.experiment_configs.initial_lr,
+        FLAGS.experiment_configs.initial_lr * strategy.num_replicas_in_sync,
         FLAGS.experiment_configs.drop_every,
         FLAGS.experiment_configs.decay_factor,
     )
@@ -82,7 +95,7 @@ def main(_):
 
     # Tensorboard Callback
     timestamp = datetime.utcnow().strftime("%y%m%d-%H%M%S")
-    logs_dir = f"logs_{FLAGS.experiment_configs.object_category}_{timestamp}"
+    logs_dir = f"logs_{timestamp}"
     logs_dir = os.path.join(FLAGS.experiment_configs.artifact_location, logs_dir)
     tb_callback = callbacks.TensorBoard(log_dir=logs_dir)
 
@@ -99,7 +112,7 @@ def main(_):
     # Pack the callbacks as a list.
     callback_list = [tb_callback, checkpoint_callback, lr_callback]
     if FLAGS.wandb_api_key is not None:
-        callback_list.append(wandb.keras.WandbCallback())
+        callback_list.extend(wandb.keras.WandbCallback())
 
     # Define Model and Optimizer
     with strategy.scope():
@@ -126,13 +139,8 @@ def main(_):
     logging.info("Training complete, serializing model with the best checkpoint.")
     serialization_path = os.path.join(
         FLAGS.experiment_configs.artifact_location,
-        f"final_model_{FLAGS.experiment_configs.object_category}_{timestamp}",
+        "final_model" f"{FLAGS.experiment_configs.object_category}_{timestamp}",
     )
-
-    # Since the model contains a custom regularizer, during loading the model we need to do the following:
-    # model = keras.models.load_model(filepath,
-    #   custom_objects={"OrthogonalRegularizer": transform_block.OrthogonalRegularizer}
-    # )
     model.load_weights(checkpoint_path)
     model.save(serialization_path)
     logging.info(f"Model serialized to {serialization_path}.")

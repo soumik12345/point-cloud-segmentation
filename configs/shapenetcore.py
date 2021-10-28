@@ -12,12 +12,13 @@ def get_config() -> ml_collections.ConfigDict:
     config.initial_lr = 1e-3  # Initial Learning Rate
     config.drop_every = 20  # Epochs after which Learning Rate is dropped
     config.decay_factor = 0.5  # Learning Rate Decay Factor
-    config.epochs = 100  # Number of training epochs
+    config.epochs = 50  # Number of training epochs
     config.use_mp = False  # Flag: Use mixed-precision or not
     config.use_tpus = True  # Flag: Use TPUs or not
 
     config.metadata_url = "https://github.com/soumik12345/point-cloud-segmentation/releases/download/v0.2/metadata.json" # Metadata URL
     config.artifact_location = "gs://pointnet-segmentation"  # Artifact dump dir (using a GCS location is not a requirement
+    config.use_in_memory_loader = False # Flag: Use in-memory dataloader
     # GPUs but for running on TPUs data must be coming from a GCS location).
     config.samples_per_shard = 512  # Max number of data shards per TFRecord file
     config.jitter_minval = -5e-3  # Point cloud jitter range lower limit
