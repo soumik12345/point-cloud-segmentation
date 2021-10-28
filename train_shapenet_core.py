@@ -23,7 +23,6 @@ from point_seg import models, utils
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("wandb_project_name", "pointnet_shapenet_core", "W&B Project Name")
-flags.DEFINE_string("experiment_name", "shapenet_core_experiment", "Experiment Name")
 flags.DEFINE_string("wandb_api_key", None, "WandB API Key")
 config_flags.DEFINE_config_file("experiment_configs")
 
@@ -38,7 +37,7 @@ def main(_):
     if FLAGS.wandb_api_key is not None:
         utils.init_wandb(
             FLAGS.wandb_project_name,
-            FLAGS.experiment_name,
+            FLAGS.experiment_configs.object_category,
             FLAGS.wandb_api_key,
             FLAGS.experiment_configs.to_dict(),
         )
@@ -99,7 +98,7 @@ def main(_):
     # Pack the callbacks as a list.
     callback_list = [tb_callback, checkpoint_callback, lr_callback]
     if FLAGS.wandb_api_key is not None:
-        callback_list.extend(wandb.keras.WandbCallback())
+        callback_list.append(wandb.keras.WandbCallback())
 
     # Define Model and Optimizer
     with strategy.scope():

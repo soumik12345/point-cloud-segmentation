@@ -39,11 +39,13 @@ class StepDecay(LearningRateDecay):
 
 
 def init_wandb(project_name, experiment_name, wandb_api_key, config: Dict):
-    """Initialize Wandb
+    """Initialize WandB.
+
     Args:
-        project_name: project name on Wandb
-        experiment_name: experiment name on Wandb
-        wandb_api_key: Wandb API Key
+        project_name: project name on WandB
+        experiment_name: experiment name on WandB
+        wandb_api_key: WandB API Key
+        config: Experiment configurations.
     """
     if project_name is not None and experiment_name is not None:
         os.environ["WANDB_API_KEY"] = wandb_api_key
