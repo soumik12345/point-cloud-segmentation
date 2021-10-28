@@ -72,7 +72,7 @@ def main(_):
     # Learning Rate scheduling callback
     logging.info("Initializing callbacks.")
     lr_scheduler = utils.StepDecay(
-        FLAGS.experiment_configs.initial_lr * strategy.num_replicas_in_sync,
+        FLAGS.experiment_configs.initial_lr,
         FLAGS.experiment_configs.drop_every,
         FLAGS.experiment_configs.decay_factor,
     )
