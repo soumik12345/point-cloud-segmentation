@@ -5,6 +5,8 @@ on:
       - .github/**
       - point_seg/**
       - tests.py
+      - create_tfrecords.py
+      - train_shapenet_core.py
       - requirements.txt
 jobs:
   run-tests:
