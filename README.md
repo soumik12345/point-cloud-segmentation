@@ -6,7 +6,7 @@ _**By [Soumik Rakshit](https://github.com/soumik12345) & [Sayak Paul](https://gi
 
 This repository provides a TF2 implementation of PointNet<sup>1</sup> for segmenting point clouds. Our implementation is fully supported on
 TPUs allowing you to train models faster. Distributed training (single-device multi-worker) on GPUs is also supported and so is single-GPU
-training. 
+training. Pre-trained models and results will be made available very soon. 
 
 To get an understanding of PointNet for segmentation, follow this blog post from keras.io: [Point cloud segmentation with PointNet](https://keras.io/examples/vision/pointnet_segmentation/).
 
@@ -19,15 +19,16 @@ To get an understanding of PointNet for segmentation, follow this blog post from
 
 ## Create TFRecords for ShapenetCore Shape Segmentation
 
+This part is only required if you would like to train models using TPUs. Be advised that
+training using TPUs is usually recommended when you have sufficient amount of data. Therefore, 
+you should only use TPUs for the following object categories:
+
+* `Airplane`
+* `Car`
+* `Chair`
+
 ```
 Usage: create_tfrecords.py [OPTIONS]
-
-Options:
-  --experiment_configs.val_split             Validation Split (DEFAULT: 0.2)
-  --experiment_configs.object_category       ShapenetCore object category (DEFAULT: 'Airplane')
-  --experiment_configs.artifact_location     TFRecord dump dir (DEFAULT: 'gs://pointnet-segmentation/tfrecords')
-  --experiment_configs.metadata_url          Metadata URL
-  --experiment_configs.samples_per_shard     Max number of data samples per TFRecord file (DEFAULT: 512)
 
 Example:
   python create_tfrecords.py --experiment_configs configs/shapenetcore.py
@@ -40,26 +41,19 @@ Example:
 Usage: train_shapenet_core.py [OPTIONS]
 
 Options:
-  --experiment_configs                       Experiment configs (configs/shapenetcore.py)
-  --experiment_configs.wandb_project_name    Project Name (DEFAULT: pointnet_shapenet_core)
-  --experiment_configs.experiment_name       Experiment Name (DEFAULT: shapenet_core_experiment)
-  --experiment_configs.wandb_api_key         W&B API Key (OPTIONAL)
-  --experiment_configs.object_category       ShapenetCore object category (DEFAULT: 'Airplane')
-  --experiment_configs.in_memory             Flag: Use In-memory dataloader (DEFAULT: True)
-  --experiment_configs.batch_size            Batch Size (DEFAULT: 32)
-  --experiment_configs.num_points            Number of points to be sampled from a given point cloud (DEFAULT: 1024)
-  --experiment_configs.initial_lr            Initial Learning Rate (DEFAULT: 1e-3)
-  --experiment_configs.drop_every            Epochs after which Learning Rate is dropped (DEFAULT: 20)
-  --experiment_configs.decay_factor          Learning Rate Decay Factor (DEFAULT: 0.5)
-  --experiment_configs.epochs                Number of training epochs (DEFAULT: 100)
-  --experiment_configs.use_mp                Flag: Use mixed-precision or not (DEFAULT: False)
-  --experiment_configs.use_tpus              Flag: Use mixed-precision or not (DEFAULT: True)
+  --experiment_configs    Experiment configs (configs/shapenetcore.py)
+  --wandb_project_name    Project Name (DEFAULT: pointnet_shapenet_core)
+  --use_wandb             Use WandB flag (DEFAULT: True)
 
 Example:
   python train_shapenet_core.py --experiment_configs configs/shapenetcore.py
 ```
 
-## Notes
+In case you want to change the configuration-related parameters, either edit them directly in
+`configs/shapenetcore.py` or add a new configuration and specify the name of the configuration
+in the command line.
+
+## Additional notes
 
 * The `batch_size` here denotes local batch size. If you are using single-host multi-worker distributed training,
 the `batch_size` denoted here will be multiplied by the number of workers you have. 
