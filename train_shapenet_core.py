@@ -22,8 +22,8 @@ from point_seg import models, utils
 
 
 FLAGS = flags.FLAGS
-flags.DEFINE_string("wandb_project_name", "pointnet_shapenet_core", "W&B Project Name")
-flags.DEFINE_string("wandb_api_key", None, "WandB API Key")
+flags.DEFINE_string("wandb_project_name", "pointnet_shapenet_core", "W&B Project Name.")
+flags.DEFINE_string("use_wandb", True, "If we are using WandB.")
 config_flags.DEFINE_config_file("experiment_configs")
 
 
@@ -46,7 +46,8 @@ def main(_):
         FLAGS.experiment_configs.artifact_location = "."
 
     # Initialize W&B
-    if FLAGS.wandb_api_key is not None:
+    if FLAGS.use_wandb:
+        wandb.login()
         utils.init_wandb(
             FLAGS.wandb_project_name,
             f"{FLAGS.experiment_configs.object_category}_{timestamp}",

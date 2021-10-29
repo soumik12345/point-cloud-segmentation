@@ -13,8 +13,8 @@ def get_config() -> ml_collections.ConfigDict:
     config.drop_every = 20  # Epochs after which Learning Rate is dropped
     config.decay_factor = 0.5  # Learning Rate Decay Factor
     config.epochs = 100  # Number of training epochs
-    config.use_mp = False  # Flag: Use mixed-precision or not
-    config.use_tpus = True  # Flag: Use TPUs or not
+    config.use_mp = True  # Flag: Use mixed-precision or not
+    config.use_tpus = False  # Flag: Use TPUs or not
 
     config.metadata_url = "https://github.com/soumik12345/point-cloud-segmentation/releases/download/v0.2/metadata.json"  # Metadata URL
     config.artifact_location = "gs://pointnet-segmentation"  # Artifact dump dir (using a GCS location is not a requirement
