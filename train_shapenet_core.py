@@ -51,7 +51,6 @@ def main(_):
         utils.init_wandb(
             FLAGS.wandb_project_name,
             f"{FLAGS.experiment_configs.object_category}_{timestamp}",
-            FLAGS.wandb_api_key,
             FLAGS.experiment_configs.to_dict(),
         )
 
