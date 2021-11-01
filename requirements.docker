@@ -5,3 +5,4 @@ pandas
 plotly-express
 pytest
 tqdm
+wandb
