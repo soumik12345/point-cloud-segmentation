@@ -53,6 +53,24 @@ In case you want to change the configuration-related parameters, either edit the
 `configs/shapenetcore.py` or add a new configuration and specify the name of the configuration
 in the command line.
 
+## Segmentation Results
+
+### Airplane
+
+![](./assets/Airplane/airplane.gif)
+
+### Car
+
+![](./assets/Car/car.gif)
+
+### Chair
+
+![](./assets/Chair/chair.gif)
+
+### Table
+
+![](./assets/Table/table.gif)
+
 ## Additional notes
 
 * The `batch_size` here denotes local batch size. If you are using single-host multi-worker distributed training,
