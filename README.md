@@ -13,6 +13,8 @@ To get an understanding of PointNet for segmentation, follow this blog post from
 We use the **ShapeNetCore dataset** to train our models on individual categories. The dataset is available [here](https://shapenet.org/). To train and test 
 our code, you don't need to download the dataset beforehand, though.
 
+**Update November 16, 2021**: We won the [#TFCommunitySpolight award](https://twitter.com/TensorFlow/status/1460321709488152579) for this project.
+
 ## Running using Docker
 
 - Build image using `docker build -t point-cloud-image .`
